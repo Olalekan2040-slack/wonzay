@@ -8,23 +8,26 @@
   }"
   x-init="onScroll(); window.addEventListener('scroll', () => onScroll())"
   :class="scrolled ? 'bg-white shadow-header' : 'bg-transparent'"
-  style="position:fixed;top:0;left:0;right:0;z-index:1000;transition:background 0.4s ease,box-shadow 0.4s ease;">
+  style="position:fixed;top:0;left:0;right:0;z-index:9000;transition:background 0.4s ease,box-shadow 0.4s ease;">
 
   <div style="max-width:1400px;margin:0 auto;padding:0 2rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;height:72px;">
 
       <!-- Logo -->
-      <a href="{% url 'store:home' %}" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;" aria-label="Wonzays Kollections home">
-        <!-- White version shown on dark/transparent hero, coloured version when scrolled -->
+      <a href="{% url 'store:home' %}"
+         style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;position:relative;z-index:9100;"
+         aria-label="Wonzays Kollections home">
+        <!-- Coloured logo on white/scrolled header -->
         <img src="{% static 'images/wonzays_website_logo_primary.png' %}"
              alt="Wonzays Kollections"
              x-show="scrolled"
-             style="height:44px;width:auto;display:none;transition:opacity 0.3s;"
+             style="height:46px;width:auto;display:none;transition:opacity 0.3s;pointer-events:none;"
              loading="eager" />
+        <!-- White (inverted) logo on dark transparent hero -->
         <img src="{% static 'images/wonzays_website_logo_primary.png' %}"
              alt="Wonzays Kollections"
              x-show="!scrolled"
-             style="height:44px;width:auto;filter:brightness(0) invert(1);transition:opacity 0.3s;"
+             style="height:46px;width:auto;filter:brightness(0) invert(1);transition:opacity 0.3s;pointer-events:none;"
              loading="eager" />
       </a>
 

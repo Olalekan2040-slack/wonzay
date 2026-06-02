@@ -101,15 +101,22 @@ class ProfileView(LoginRequiredMixin, View):
         elif action == "change_password":
             old_pw = request.POST.get("old_password", "")
             new_pw = request.POST.get("new_password", "")
-            if request.user.check_password(old_pw) and new_pw:
+            if request.user.check_password(old_pw) and len(new_pw) >= 8:
                 request.user.set_password(new_pw)
                 request.user.save()
-                login(request, request.user)
+                # update_session_auth_hash keeps the user logged in after
+                # password change without needing to call login() (which
+                # requires a specific backend when multiple are configured).
+                from django.contrib.auth import update_session_auth_hash
+                update_session_auth_hash(request, request.user)
                 from django.contrib import messages as msg
                 msg.success(request, "Password changed successfully.")
-            else:
+            elif not request.user.check_password(old_pw):
                 from django.contrib import messages as msg
                 msg.error(request, "Current password is incorrect.")
+            else:
+                from django.contrib import messages as msg
+                msg.error(request, "New password must be at least 8 characters.")
         return redirect("accounts:profile")
 
 
