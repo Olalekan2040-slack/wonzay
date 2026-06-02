@@ -1,0 +1,75 @@
+{% load static store_tags %}
+<article class="pcard">
+
+  <div class="pcard__media">
+    <a href="{{ product.get_absolute_url }}" style="display:block;position:absolute;inset:0;" tabindex="-1">
+      {% with img=product.primary_image %}
+      {% if img %}
+        <img class="pcard__img" src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}" loading="lazy" />
+        {% with img2=product.secondary_image %}{% if img2 %}
+        <img class="pcard__img pcard__img2" src="{{ img2.image.url }}" alt="{{ product.name }}" loading="lazy"
+             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+        {% endif %}{% endwith %}
+      {% else %}
+        <img class="pcard__img" src="{% static 'images/female_ankara.png' %}" alt="{{ product.name }}" loading="lazy" />
+      {% endif %}
+      {% endwith %}
+    </a>
+
+    <!-- Quick Add overlay -->
+    {% if product.in_stock %}
+    <div class="pcard__overlay">
+      <button class="pcard__add-btn" data-quick-buy="{{ product.pk }}" data-product-slug="{{ product.slug }}">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        Quick Add
+      </button>
+    </div>
+    {% else %}
+    <div class="pcard__overlay">
+      <div style="width:100%;background:rgba(0,0,0,0.55);color:white;text-align:center;padding:0.75rem;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;border-radius:10px;">
+        Sold Out
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Badges -->
+    <div style="position:absolute;top:0.75rem;left:0.75rem;display:flex;flex-direction:column;gap:5px;">
+      {% if product.is_new %}<span class="badge badge-new">New In</span>{% endif %}
+      {% if product.is_on_sale %}<span class="badge badge-sale">-{{ product.discount_percentage }}%</span>{% endif %}
+      {% if not product.in_stock %}<span class="badge badge-soldout">Sold Out</span>{% endif %}
+    </div>
+
+    <!-- Wishlist -->
+    {% if user.is_authenticated %}
+    <form action="{% url 'accounts:wishlist_toggle' %}" method="post"
+          style="position:absolute;top:0;right:0;margin:0;padding:0;border:none;background:none;">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{ product.pk }}" />
+      <button type="submit" aria-label="Add to wishlist" class="pcard__wish">
+        <svg width="15" height="15" fill="none" stroke="#5B4B8A" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- Info -->
+  <div class="pcard__info">
+    <a href="{{ product.get_absolute_url }}" style="text-decoration:none;">
+      <p class="pcard__name">{{ product.name }}</p>
+    </a>
+    <div class="pcard__price">
+      <span>${{ product.price }}</span>
+      {% if product.is_on_sale %}
+      <span class="pcard__price-was">${{ product.compare_at_price }}</span>
+      {% endif %}
+    </div>
+    {% if product.average_rating %}
+    <div class="pcard__stars">★★★★★ <span style="font-size:0.75rem;color:#A7A3C0;font-weight:400;margin-left:4px;">({{ product.review_count }})</span></div>
+    {% endif %}
+  </div>
+
+</article>

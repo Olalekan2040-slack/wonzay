@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static store_tags %}
+
+{% block title %}{{ product.name }} — Wonzays Kollections{% endblock %}
+{% block meta_description %}{{ product.meta_description|default:product.description|truncatewords:20 }}{% endblock %}
+{% block og_title %}{{ product.name }}{% endblock %}
+{% block og_description %}{{ product.description|truncatewords:20 }}{% endblock %}
+{% block og_image_tag %}{% if product.primary_image %}<meta property="og:image" content="{{ request.build_absolute_uri }}{{ product.primary_image.image.url }}" />{% endif %}{% endblock %}
+
+{% block content %}
+<div class="section py-8 lg:py-12">
+
+  <!-- Breadcrumb -->
+  <nav class="text-xs text-[var(--color-text-muted)] mb-6 flex items-center gap-2 flex-wrap">
+    <a href="{% url 'store:home' %}" class="hover:text-[var(--color-primary)] transition">Home</a><span>/</span>
+    {% if product.collection %}
+    <a href="{{ product.collection.get_absolute_url }}" class="hover:text-[var(--color-primary)] transition">{{ product.collection.name }}</a><span>/</span>
+    {% endif %}
+    <span class="text-[var(--color-text)] font-medium line-clamp-1">{{ product.name }}</span>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+
+    <!-- Image gallery -->
+    <div>
+      <div class="relative overflow-hidden bg-[var(--color-surface)] aspect-[3/4]">
+        {% with img=product.primary_image %}
+        {% if img %}
+        <img id="pdp-main-image" src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}"
+             class="w-full h-full object-cover" />
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center bg-[var(--color-primary-light)]">
+          <span class="font-serif font-bold text-8xl text-[var(--color-primary)] opacity-20">W</span>
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% if product.is_new %}<span class="absolute top-3 left-3 badge-new">New In</span>{% endif %}
+        {% if product.is_on_sale %}<span class="absolute top-3 {% if product.is_new %}left-16{% else %}left-3{% endif %} badge-sale">-{{ product.discount_percentage }}%</span>{% endif %}
+      </div>
+      {% if product.images.count > 1 %}
+      <div class="grid grid-cols-5 gap-2 mt-3">
+        {% for img in product.images.all %}
+        <button data-thumbnail data-src="{{ img.image.url }}"
+                class="aspect-square overflow-hidden border-2 {% if forloop.first %}border-[var(--color-primary)]{% else %}border-transparent{% endif %} hover:border-[var(--color-primary)] transition">
+          <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}" class="w-full h-full object-cover" loading="lazy" />
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Product info -->
+    <div x-data="pdpForm()" x-init="init()">
+      <h1 class="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-3">{{ product.name }}</h1>
+
+      <!-- Price -->
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl font-bold text-[var(--color-text)]">${{ product.price }}</span>
+        {% if product.is_on_sale %}
+        <span class="text-lg text-[var(--color-text-muted)] line-through">${{ product.compare_at_price }}</span>
+        <span class="badge-sale text-sm">Save {{ product.discount_percentage }}%</span>
+        {% endif %}
+      </div>
+
+      <!-- Rating -->
+      {% if product.average_rating %}
+      <div class="flex items-center gap-2 mb-5">
+        <div class="stars text-sm">{% for filled in product.average_rating|filled_stars %}{% if filled %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <span class="text-sm text-[var(--color-text-muted)]">{{ product.average_rating|floatformat:1 }} ({{ product.review_count }} reviews)</span>
+        <a href="#reviews" class="text-xs text-[var(--color-primary)] hover:underline">Read reviews</a>
+      </div>
+      {% endif %}
+
+      <hr class="border-[var(--color-border)] mb-5" />
+
+      <form action="{% url 'cart:add' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.pk }}" />
+
+        {# Variant data embedded for client-side lookup — no round-trip needed #}
+        <script>
+          window.PRODUCT_VARIANTS = {{ variants_json|safe }};
+        </script>
+
+        <!-- Colour -->
+        {% if colours %}
+        <div class="mb-5">
+          <p class="label mb-2">
+            Colour / Print:
+            <span x-text="selectedColour || 'Select a colour'"
+                  :class="selectedColour ? 'text-[var(--color-primary)] font-semibold' : 'text-[var(--color-text-muted)]'"></span>
+          </p>
+          <div class="flex flex-wrap gap-2">
+            {% for colour in colours %}{% if colour %}
+            <button type="button"
+                    @click="selectedColour = '{{ colour }}'; resolveVariant()"
+                    :class="selectedColour === '{{ colour }}'
+                             ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                             : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'"
+                    class="px-3 py-1.5 text-xs font-medium border-2 transition cursor-pointer">
+              {{ colour }}
+            </button>
+            {% endif %}{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Size -->
+        {% if sizes %}
+        <div class="mb-5">
+          <div class="flex items-center justify-between mb-2">
+            <p class="label mb-0">
+              Size:
+              <span x-text="selectedSize || 'Select a size'"
+                    :class="selectedSize ? 'text-[var(--color-primary)] font-semibold' : 'text-[var(--color-text-muted)]'"></span>
+            </p>
+            <a href="{% url 'pages:static_page' 'size-chart' %}" class="text-xs text-[var(--color-primary)] hover:underline">Size Guide →</a>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            {% for size in sizes %}{% if size %}
+            <button type="button"
+                    @click="selectedSize = '{{ size }}'; resolveVariant()"
+                    :class="selectedSize === '{{ size }}'
+                             ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
+                             : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'"
+                    class="w-12 h-10 flex items-center justify-center text-sm font-medium border-2 transition cursor-pointer">
+              {{ size }}
+            </button>
+            {% endif %}{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {# The variant_id is resolved by resolveVariant() in Alpine; quantity uses x-model so the value DOM property is always current #}
+        <input type="hidden" name="variant_id" x-ref="variantId" />
+
+        <!-- Quantity -->
+        <div class="mb-5">
+          <p class="label mb-2">Quantity</p>
+          <div class="flex items-center border border-[var(--color-border)] w-fit">
+            <button type="button" @click="qty = Math.max(1, qty - 1)"
+                    class="w-10 h-10 flex items-center justify-center hover:bg-[var(--color-surface)] transition text-lg font-light select-none">−</button>
+            <input type="number" name="quantity" x-model="qty" min="1" max="99" readonly
+                   class="w-12 h-10 text-center text-sm font-medium focus:outline-none border-x border-[var(--color-border)]" />
+            <button type="button" @click="qty = Math.min(99, qty + 1)"
+                    class="w-10 h-10 flex items-center justify-center hover:bg-[var(--color-surface)] transition text-lg font-light select-none">+</button>
+          </div>
+        </div>
+
+        <!-- Variant / stock status -->
+        <div class="mb-4 text-sm">
+          <template x-if="variantStatus === 'in_stock'">
+            <span class="text-green-600 font-medium">✓ In Stock</span>
+          </template>
+          <template x-if="variantStatus === 'low_stock'">
+            <span class="text-amber-600 font-medium">⚠ Only a few left</span>
+          </template>
+          <template x-if="variantStatus === 'sold_out'">
+            <span class="text-gray-500 font-medium">✗ Sold Out</span>
+          </template>
+          <template x-if="!variantStatus">
+            {% if product.in_stock %}
+            <span class="text-green-600 font-medium">✓ In Stock</span>
+            {% else %}
+            <span class="text-gray-500 font-medium">✗ Sold Out</span>
+            {% endif %}
+          </template>
+        </div>
+
+        <!-- Add to Cart button — sole submit inside this form -->
+        <button type="submit"
+                :disabled="variantStatus === 'sold_out'"
+                :class="variantStatus === 'sold_out' ? 'opacity-50 cursor-not-allowed' : ''"
+                class="btn-primary w-full py-4 text-base">
+          <span x-text="variantStatus === 'sold_out' ? 'Sold Out' : 'Add to Cart'">Add to Cart</span>
+        </button>
+      </form>
+
+      <!-- Wishlist — intentionally a SEPARATE form, never nested inside the cart form -->
+      {% if user.is_authenticated %}
+      <form action="{% url 'accounts:wishlist_toggle' %}" method="post" style="margin-top:0.75rem;">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.pk }}" />
+        <button type="submit" class="btn-secondary w-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          </svg>
+          Add to Wishlist
+        </button>
+      </form>
+      {% endif %}
+
+      <!-- AfterPay badge -->
+      <div class="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-surface)] px-4 py-3 border border-[var(--color-border)]">
+        <span class="font-semibold">AfterPay</span> available on orders $35+. 4 interest-free payments.
+      </div>
+
+      <!-- Accordions -->
+      <div class="mt-6 border-t border-[var(--color-border)]">
+        {% include "components/accordion.html" with title="Product Description" content=product.description open=True %}
+        {% include "components/accordion.html" with title="Shipping & Delivery" content="Standard shipping 3–7 business days Australia-wide. Express 1–3 days. Free shipping on orders $150+." %}
+        {% include "components/accordion.html" with title="Returns & Exchange" content="We accept returns within 14 days of delivery. Items must be unworn, unwashed and in original condition. Contact us to arrange." %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div id="reviews" class="mt-16 pt-10 border-t border-[var(--color-border)]">
+    <h2 class="font-serif font-bold text-2xl mb-8">Customer Reviews {% if product.review_count %}<span class="text-[var(--color-text-muted)] font-normal text-base">({{ product.review_count }})</span>{% endif %}</h2>
+
+    {% if reviews %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      {% for review in reviews %}
+      <div class="border border-[var(--color-border)] p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div>
+            <p class="font-semibold text-sm">{{ review.author.get_full_name|default:review.author.email }}</p>
+            <p class="text-xs text-[var(--color-text-muted)]">{{ review.created_at|date:"d M Y" }}</p>
+          </div>
+          <div class="stars text-sm">{% for filled in review.rating|filled_stars %}{% if filled %}★{% else %}☆{% endif %}{% endfor %}</div>
+        </div>
+        {% if review.title %}<p class="font-semibold text-sm mb-2">{{ review.title }}</p>{% endif %}
+        <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">{{ review.body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-[var(--color-text-muted)] mb-8">No reviews yet. Be the first!</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <div class="border border-[var(--color-border)] p-6 max-w-lg">
+      <h3 class="font-serif font-bold text-lg mb-4">Write a Review</h3>
+      <form action="{% url 'reviews:submit' product.slug %}" method="post" class="flex flex-col gap-4">
+        {% csrf_token %}
+        <div>
+          <label class="label">Rating</label>
+          <div class="flex gap-2 mt-1" x-data="{ rating: 5 }">
+            {% for i in "54321" %}
+            <label class="cursor-pointer text-2xl" :class="{{ i }} <= rating ? 'text-amber-400' : 'text-gray-300'">
+              <input type="radio" name="rating" value="{{ i }}" class="sr-only" x-model="rating" />★
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div><label class="label" for="r-title">Title</label><input type="text" id="r-title" name="title" class="input" placeholder="Great product!" /></div>
+        <div><label class="label" for="r-body">Review</label><textarea id="r-body" name="body" rows="4" class="input resize-none" placeholder="Tell us what you think..." required></textarea></div>
+        <button type="submit" class="btn-primary self-start">Submit Review</button>
+      </form>
+    </div>
+    {% else %}
+    <p class="text-sm text-[var(--color-text-muted)]"><a href="{% url 'accounts:login' %}?next={{ request.path }}" class="text-[var(--color-primary)] hover:underline">Log in</a> to leave a review.</p>
+    {% endif %}
+  </div>
+
+  <!-- Related products -->
+  {% if related_products %}
+  <div class="mt-16 pt-10 border-t border-[var(--color-border)]">
+    <h2 class="font-serif font-bold text-2xl mb-8">You May Also Like</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {% for p in related_products %}{% include "components/product_card.html" with product=p %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+/**
+ * Alpine component for the product detail page.
+ *
+ * Responsibilities:
+ *  1. Track selectedSize, selectedColour, qty.
+ *  2. On selection change, find the best-matching ProductVariant from the
+ *     embedded PRODUCT_VARIANTS array and write its id into the hidden
+ *     <input name="variant_id"> so the cart view receives a real PK.
+ *  3. Expose variantStatus ('in_stock' | 'low_stock' | 'sold_out' | '')
+ *     so the template can show live stock feedback and disable the button.
+ *  4. Ensure the form always submits — even when no variant is resolved
+ *     (the cart view handles variant=None gracefully).
+ */
+function pdpForm() {
+  return {
+    selectedSize: '',
+    selectedColour: '',
+    qty: 1,
+    variantStatus: '',
+
+    init() {
+      // Auto-select first available size and colour so the form is ready
+      const variants = window.PRODUCT_VARIANTS || [];
+      if (!variants.length) return;
+
+      const firstAvailable = variants.find(v => v.is_available) || variants[0];
+      if (firstAvailable.size)   this.selectedSize   = firstAvailable.size;
+      if (firstAvailable.colour) this.selectedColour = firstAvailable.colour;
+      this.resolveVariant();
+    },
+
+    resolveVariant() {
+      const variants = window.PRODUCT_VARIANTS || [];
+      if (!variants.length) return;
+
+      // Find a variant that matches the current size AND colour selection.
+      // If only one dimension exists (e.g. no colours), match on whichever is set.
+      const match = variants.find(v => {
+        const sizeOk   = !this.selectedSize   || v.size   === this.selectedSize;
+        const colourOk = !this.selectedColour || v.colour === this.selectedColour;
+        return sizeOk && colourOk;
+      });
+
+      if (this.$refs.variantId) {
+        this.$refs.variantId.value = match ? match.id : '';
+      }
+
+      this.variantStatus = match ? match.stock_status : '';
+    },
+  };
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,449 @@
+Wonzays Kollections
+E-Commerce Fashion Platform
+Product Requirements Document (PRD)
+Karalee, Ipswich QLD, Australia  |  Version 1.0  |  May 2026
+
+
+1. Product Overview
+Project Name	Wonzays Kollections – E-Commerce Website
+Business	Wonzays Kollections
+Location	Karalee, Ipswich QLD, Australia
+Technology Stack	Django, Python 3.13, PostgreSQL, HTML/CSS/JS, Tailwind CSS
+Colour Palette	Purple and White
+Reference Site	https://uniqueafrique.com/
+Document Version	1.0
+Date	May 2026
+
+Wonzays Kollections is an Australian-based fashion retailer selling contemporary clothing and accessories. This document defines all functional, technical, and design requirements to build a full-featured Django e-commerce platform that mirrors and extends the experience offered by the Unique Afrique Shopify store.
+
+2. Business Goals & Success Metrics
+2.1 Primary Goals
+•	Deliver a fully self-owned Django storefront — no Shopify dependency, full data ownership.
+•	Replicate the complete customer journey: browse → filter → product detail → cart → checkout → order confirmation.
+•	Enable the store owner to manage products, collections, orders, and promotions via a custom admin dashboard.
+•	Support Australian and international customers with multi-currency display and local payment methods (Stripe, PayPal, AfterPay/Buy-Now-Pay-Later).
+•	Achieve fast page loads and mobile-first design to serve the majority social-media referral traffic.
+
+2.2 Key Performance Indicators
+Page Load Time	< 2 s on 4G (Lighthouse performance ≥ 85)
+Mobile Score	Lighthouse mobile ≥ 80
+Checkout Abandonment	Reduce to < 60 % within 3 months of launch
+Admin Ease	Owner can add a product in < 3 minutes
+Uptime Target	99.5 % monthly
+
+3. Scope
+3.1 In Scope
+•	Public storefront: home, collections, product detail, search, cart, checkout, order success
+•	Customer accounts: register, login, order history, wishlist
+•	Custom admin panel for store owner (products, orders, promotions, customers, shipping)
+•	Newsletter subscription with email capture popup (10 % off incentive)
+•	Customer reviews / testimonials section
+•	Static pages: About, Contact, Shipping & Delivery, Returns & Exchange Policy, Size Chart
+•	Promotional banner system (announcement bar + hero slides)
+•	Discount / coupon code engine
+•	Buy-Now-Pay-Later badge display
+•	Social media links (Instagram primary)
+•	SEO: meta tags, Open Graph, structured data (Product schema)
+
+3.2 Out of Scope (Phase 1)
+•	Native mobile app (iOS/Android)
+•	Multi-vendor marketplace
+•	Loyalty points programme
+•	Live chat / chatbot
+•	Multi-language support (English only at launch)
+
+4. User Personas
+4.1 Shopper (Primary)
+Profile	Female, 25–45, Australia/international, fashion-conscious
+Goals	Discover new prints, check sizing, buy with confidence, track delivery
+Pain Points	Unclear sizing, slow checkout, no AfterPay option, poor mobile UX
+Device	Mobile-first (Instagram/Facebook referral)
+
+4.2 Store Owner / Admin (Secondary)
+Profile	Non-technical business owner
+Goals	Add products quickly, run promotions, fulfil orders, track revenue
+Pain Points	Complex interfaces, no real-time stock alerts, manual discount management
+Device	Desktop browser (Chrome)
+
+5. Site Structure & URL Design
+All URLs follow REST-style conventions. The Django URL conf is organised as follows:
+
+URL Pattern	View / Purpose	Django App
+/	Homepage	store
+/collections/	All collections index	store
+/collections/<slug>/	Single collection product grid	store
+/products/<slug>/	Product detail page	store
+/search/	Search results	store
+/cart/	Shopping cart	cart
+/checkout/	Checkout (guest + logged in)	orders
+/orders/<id>/success/	Order confirmation	orders
+/accounts/register/	Customer registration	accounts
+/accounts/login/	Customer login	accounts
+/accounts/profile/	Order history, wishlist	accounts
+/pages/<slug>/	Static pages (About, Shipping…)	pages
+/admin/	Django built-in admin (staff)	—
+/dashboard/	Custom owner dashboard	dashboard
+
+6. Functional Requirements
+6.1 Homepage
+6.1.1 Announcement / Promo Bar
+A full-width sticky banner at the very top of every page displays a promotional message (e.g. 'UP TO 50% OFF MEN COLLECTION – CODE: MEN30 AT CHECKOUT'). The message and code are editable from the admin dashboard without a code deploy. Left/right arrow controls allow cycling through multiple announcements.
+
+6.1.2 Navigation Header
+•	Logo (left) linking to home
+•	Primary nav: Home | Shop (mega-dropdown) | Contact
+•	Utility icons: Search, Account, Cart (with badge count)
+•	Shop mega-menu sub-items: Shop All, New Arrival, Dresses, Sets, Tops, Skirts/Shorts/Pants, Jackets, Jumpsuits, Men — each with a featured product image and link
+•	Mobile: hamburger menu, full-screen slide-out drawer
+
+6.1.3 Hero Banner / Slideshow
+•	Full-width image slideshow (minimum 2 slides) with overlay text and two CTA buttons per slide
+•	Auto-play (5 s), manual prev/next arrows, dot indicators
+•	Each slide: background image, headline text, sub-headline, CTA 1 (primary button), CTA 2 (secondary/outline button)
+•	All fields editable from the admin dashboard
+
+6.1.4 Collections Grid
+A labelled grid of collection tiles (e.g. Restock, Best Seller, Bubu/Kaftan, New Arrival, Accessories, Dresses, Jumpsuits, Couple Sets, Men). Each tile displays a cover image, collection name, and links to the collection page.
+
+6.1.5 Featured Product Carousels
+Two horizontal scrollable product carousels on the home page:
+•	'Shop New Arrival' — products tagged new_arrival
+•	'Best Sellers' — products tagged best_seller
+Each card displays: product image (hover reveals second image if available), 'New in' badge, sale % badge, product name, price (with strikethrough original if on sale), Quick Buy button that opens a size-selector drawer without leaving the page.
+
+6.1.6 Brand Story Section
+A full-width split section: large editorial image on one side, brand narrative text on the other. Text is editable from the admin dashboard. Includes a 'SHOP NOW' CTA button.
+
+6.1.7 Tabbed Category Carousels
+Below the brand story, a tabbed interface allows switching between category-scoped product carousels: Bottoms | Dresses | Men | Shop Couple. Tab labels and linked collections are configurable from the admin.
+
+6.1.8 Customer Testimonials
+A scrollable testimonials section showing customer name, product purchased (with thumbnail), star rating, and review text. Reviews are sourced from the site's review system and can be featured manually from the admin.
+
+6.1.9 Trust Badges
+Four icon-with-label trust badges displayed in a row: 'African Fashion', 'Ready to Wear', 'Made in Nigeria', 'Buy Now Pay Later'.
+
+6.1.10 Email Pop-up
+A modal pop-up appears after 5 seconds (or on exit intent) offering 10 % off the first order in exchange for email subscription. The pop-up is shown once per browser session (cookie-gated). Submitted emails are stored in the database and optionally forwarded to a configured mailing list service (Mailchimp-compatible via webhook).
+
+6.2 Collections / Product Listing Page (PLP)
+•	Displays all products in a collection with a configurable grid (2 cols mobile, 3–4 cols desktop)
+•	'View all' link at top right
+•	Sort options: Featured, Price low→high, Price high→low, Newest, Best Selling
+•	Filter sidebar/drawer: Category, Size, Colour, Price Range, Availability (In Stock / On Sale)
+•	Pagination or infinite scroll (configurable)
+•	Product cards: same spec as homepage carousel cards
+•	Collection header: banner image + collection name + description (editable)
+
+6.3 Product Detail Page (PDP)
+•	Image gallery: main image + thumbnail strip; swipe on mobile; hover-zoom on desktop
+•	Product title, price (sale price + original with % discount badge if applicable)
+•	Size selector: radio buttons; 'Sold Out' label on unavailable sizes; link to size chart
+•	Colour/print variant selector (swatch tiles)
+•	Quantity stepper
+•	'Add to Cart' button (full-width, primary) + 'Add to Wishlist' icon
+•	Stock status indicator: In Stock / Low Stock (≤ 3 units) / Sold Out
+•	'New in' badge if product was added within 14 days
+•	Product description (rich text)
+•	Shipping info accordion (estimated delivery, free shipping threshold)
+•	Returns & Exchange policy accordion
+•	Customer reviews block: star rating summary, individual reviews with photo if available
+•	Related products carousel (same collection)
+
+6.4 Search
+•	Search bar in header (icon tap opens overlay input)
+•	Live / instant search: top 5 matching products shown as you type (AJAX)
+•	Full results page at /search/?q= with PLP-style grid
+•	Searches product name, description, tags, and collection name
+
+6.5 Cart
+•	Persistent cart stored in Django session (anonymous) and linked to account (authenticated)
+•	Line items: product thumbnail, name, variant (size/colour), quantity stepper, unit price, line total, remove button
+•	Cart subtotal, estimated shipping note, discount code field
+•	'Continue Shopping' + 'Proceed to Checkout' buttons
+•	Cart accessible via drawer (slide-in from right) on all pages without full-page navigation
+
+6.6 Checkout
+•	Guest checkout supported (no forced registration)
+•	Steps: Contact Info → Shipping Address → Shipping Method → Payment → Review & Place Order
+•	Progress indicator at top
+•	Contact: email, phone
+•	Shipping address: full name, address line 1 & 2, city, state, postcode, country (default AU)
+•	Shipping method: Flat rate Standard / Express (rates configurable per-country in admin)
+•	Discount code redemption
+•	Order summary sidebar (sticky): items, subtotal, shipping, discount, total
+•	Payment: Stripe (card) + PayPal + AfterPay (conditional on order total ≥ $35)
+•	On success: send order confirmation email, redirect to /orders/<id>/success/
+
+6.7 Customer Accounts
+•	Register: email, password, first/last name
+•	Login / Logout
+•	Password reset via email link
+•	Profile: update name, email, saved addresses
+•	Order History: list of all past orders with status (Processing / Shipped / Delivered / Cancelled), click to view detail
+•	Wishlist: save products; add all to cart from wishlist
+
+6.8 Reviews System
+•	Authenticated customers who have purchased the product can submit a review
+•	Review fields: star rating (1–5), title, body, optional photo upload
+•	Store owner can approve / reject reviews from dashboard before public display
+•	Average rating displayed on PDP and PLC cards
+
+6.9 Discount & Promotions Engine
+•	Create coupon codes: percentage off, fixed amount off, free shipping
+•	Conditions: minimum order value, specific collection, specific product, single use per customer, expiry date
+•	Sale prices on individual products (compare-at price field)
+•	Announcement bar message tied to a specific coupon code
+
+6.10 Newsletter
+•	Email capture form in footer and pop-up modal
+•	Emails stored in NewsletterSubscriber model
+•	Optional webhook to Mailchimp or similar (URL configurable via .env)
+•	Unsubscribe link in all marketing emails
+
+6.11 Static / Content Pages
+•	Contact page: contact form (name, email, subject, message) → emails admin; Google Maps embed; business address
+•	Shipping & Delivery: rich-text content page
+•	Returns & Exchange Policy: rich-text content page
+•	Size Chart: image + table upload
+•	About / Brand Story: rich-text + images
+•	Blog (optional phase 1.5): list view + detail view
+
+6.12 Footer
+•	Brand description / tagline
+•	Collections column: links to all collection pages
+•	Quick Links column: Search, Size Chart, Shipping & Delivery, Returns Policy, Blog
+•	Newsletter signup form
+•	Social media icons (Instagram)
+•	Accepted payment icons: Visa, Mastercard, PayPal, AmEx, Apple Pay, Google Pay, AfterPay
+•	Copyright line
+
+7. Admin / Owner Dashboard
+In addition to the standard Django admin (/admin/), a simplified custom dashboard (/dashboard/) is built for non-technical store owners.
+
+7.1 Dashboard Modules
+Overview	Today's sales, orders, revenue, low-stock alerts, recent orders table
+Products	Add / Edit / Delete products; upload multiple images; set variants (size, colour); stock levels; sale price; tags; collection assignment
+Collections	Create / edit collections; upload cover image; set description; reorder products within collection
+Orders	List all orders; filter by status; update status; view order detail; print packing slip (PDF)
+Customers	View customer list; order history per customer; export CSV
+Discount Codes	Create / manage coupon codes; view redemption stats
+Shipping Rates	Set flat-rate shipping per country or region; free shipping threshold
+Content Blocks	Edit announcement bar text; manage hero slides (image, text, CTA); update trust badges; edit brand story text
+Reviews	Approve / reject pending reviews; flag/hide existing reviews
+Newsletter	View subscriber list; export CSV; configure webhook URL
+Settings	Store name, contact email, social links, SEO defaults, payment gateway API keys (stored in .env)
+
+8. Data Models
+8.1 Core Django Apps
+store	Product, ProductImage, ProductVariant, Collection, Tag
+cart	Cart, CartItem
+orders	Order, OrderItem, ShippingAddress, ShippingRate
+accounts	CustomerProfile (extends User), Address, Wishlist, WishlistItem
+reviews	Review, ReviewImage
+promotions	Coupon, CouponUsage
+newsletter	NewsletterSubscriber
+content	AnnouncementBar, HeroSlide, TrustBadge, StaticPage
+dashboard	Dashboard views only — no additional models
+
+8.2 Key Model Fields
+Product
+•	id, name, slug (unique), description (RichTextField), price, compare_at_price
+•	collection (FK), tags (M2M), is_active, is_new_arrival, is_best_seller
+•	created_at, updated_at
+
+ProductVariant
+•	product (FK), size, colour, sku, stock_quantity, is_available
+
+Order
+•	order_number (UUID-based), customer (FK nullable for guest), status
+•	subtotal, shipping_cost, discount_amount, total
+•	coupon (FK nullable), payment_method, payment_status, stripe_payment_intent
+•	shipping_address (FK), created_at
+
+9. Design System
+9.1 Colour Palette
+The colour palette is to be supplied by the client ([TO BE CONFIRMED BY CLIENT — client-supplied palette]). The following placeholders should be updated in the Tailwind config (tailwind.config.js) before development begins.
+
+--color-primary	TBC — main brand/action colour (buttons, links, badges)
+--color-primary-dark	TBC — hover state of primary
+--color-secondary	TBC — accent / highlight
+--color-bg	TBC — page background
+--color-surface	TBC — card / panel background
+--color-text	TBC — primary body text
+--color-text-muted	TBC — secondary / meta text
+--color-border	TBC — dividers and input borders
+--color-error	TBC — form validation errors
+--color-success	TBC — stock/order success states
+
+9.2 Typography
+Body	Inter or system-ui, 16 px, line-height 1.6
+Headings	Playfair Display or client-specified serif, bold
+Labels / Badges	Inter, uppercase, letter-spacing 0.08em
+Buttons	Inter, 14 px, font-weight 600, uppercase
+
+9.3 Spacing & Grid
+•	Base unit: 4 px (Tailwind default)
+•	Content max-width: 1280 px, centred
+•	Section vertical padding: 64 px desktop, 40 px mobile
+•	Product grid: 2 cols (mobile) → 3 cols (tablet) → 4 cols (desktop)
+
+9.4 Components
+Product Card	Image (aspect-ratio 3/4), badges (New In, Sale %), name, price, Quick Buy button
+Button Variants	Primary (filled), Secondary (outline), Ghost (text only), Danger (red)
+Form Inputs	Rounded border, focus ring (primary colour), error state (red border + message)
+Modal / Drawer	Backdrop overlay, slide-in from right (cart/quick-buy), fade-in (pop-up/modal)
+Accordion	Chevron toggle, smooth max-height transition
+Toast Notifications	Top-right, 3 s auto-dismiss, success/error/info variants
+Breadcrumb	On PLP and PDP, schema.org BreadcrumbList markup
+
+10. Technical Architecture
+10.1 Stack Summary
+Backend Framework	Django 5.x (Python 3.12)
+Database	PostgreSQL 16
+ORM	Django ORM
+Task Queue	Celery + Redis (async email, webhook delivery)
+Frontend	Django templates + Tailwind CSS + Alpine.js (lightweight interactivity)
+Media Storage	AWS S3 (production) / local filesystem (development)
+Payment	Stripe (card), PayPal SDK, AfterPay (Stripe AfterPay element)
+Email	Django email backend → SendGrid or AWS SES (SMTP in dev)
+Search	Django ORM ILIKE queries (Phase 1); Elasticsearch/Typesense (Phase 2)
+Caching	Redis cache for homepage carousels, collection pages (5 min TTL)
+Deployment	Railway, Render, or AWS EC2; Nginx + Gunicorn; SSL via Let's Encrypt
+CI/CD	GitHub Actions: lint (flake8, black), tests (pytest-django), auto-deploy on main push
+Version Control	Git / GitHub
+
+10.2 Project Layout
+Recommended Django project structure:
+wonzays_kollections/   manage.py   config/               # settings, urls, wsgi, asgi     settings/       base.py       development.py       production.py   apps/     store/              # products, collections     cart/     orders/     accounts/     reviews/     promotions/     newsletter/     content/            # hero slides, announcement bar     pages/              # static content pages     dashboard/          # owner dashboard   static/     css/  js/  images/   templates/     base.html     store/  cart/  orders/  …   media/                # local dev uploads   requirements/     base.txt  dev.txt  prod.txt
+
+10.3 Security Considerations
+•	CSRF protection on all POST endpoints (Django default)
+•	Stripe webhook signature verification
+•	Payment credentials stored in environment variables only (never in code)
+•	Django ALLOWED_HOSTS, SECURE_SSL_REDIRECT, HSTS in production
+•	django-axes for brute-force login protection
+•	Media upload validation: file type whitelist (jpg/png/webp), max 5 MB
+•	Rate limiting on search and contact form endpoints
+
+11. Third-Party Integrations
+Stripe	Card payments, AfterPay, webhook for payment events
+PayPal	PayPal JS SDK, server-side order verification
+SendGrid / AWS SES	Transactional emails (order confirmation, password reset, shipping notification)
+AWS S3	Product image and media storage in production
+Google Analytics 4	Page view tracking, e-commerce events (add_to_cart, purchase)
+Instagram Feed (optional)	Embed latest Instagram posts on homepage (Instagram Basic Display API)
+Mailchimp (optional)	Newsletter webhook for subscriber sync
+Google Maps Embed	Contact page store location
+
+12. SEO Requirements
+•	Unique, descriptive <title> and <meta name='description'> on every page (editable from admin for key pages)
+•	Open Graph and Twitter Card tags (og:title, og:description, og:image)
+•	Schema.org structured data: Product (on PDP), BreadcrumbList, Organization, WebSite
+•	Canonical URLs to avoid duplicate content from sort/filter query strings
+•	XML sitemap auto-generated at /sitemap.xml (django.contrib.sitemaps)
+•	robots.txt at /robots.txt
+•	Clean, slug-based URLs for all products and collections
+•	Alt text required on all product images (admin enforced)
+•	Page speed: lazy-load images below the fold; serve WebP with JPEG fallback
+
+13. Email Templates
+Order Confirmation	Order #, item list, totals, shipping address, estimated delivery
+Shipping Notification	Tracking number + carrier link, order summary
+Password Reset	Reset link (expires 24 h)
+Welcome Email	Sent on account registration; 10 % off code if signed up via pop-up
+Newsletter	Marketing template; unsubscribe link in footer
+All email templates are HTML with inline CSS for email-client compatibility. Brand colours and logo applied per the confirmed palette.
+
+14. Accessibility
+•	WCAG 2.1 AA compliance target
+•	Sufficient colour contrast ratios (≥ 4.5:1 for body text, ≥ 3:1 for large text) — verify once palette is confirmed
+•	Keyboard navigable: all interactive elements reachable via Tab, operable via Enter/Space
+•	Focus rings visible on all interactive elements
+•	ARIA labels on icon-only buttons (cart, wishlist, close)
+•	Skip-to-content link at top of every page
+•	Form fields with associated <label> elements
+
+15. Performance Requirements
+Homepage LCP	< 2.5 s (Lighthouse, 4G)
+Image format	WebP primary; JPEG fallback via <picture>
+Image CDN	AWS S3 + CloudFront in production
+Django Query Optimisation	select_related / prefetch_related on all list views; no N+1 queries
+Redis Caching	Homepage carousels and PLP pages cached for 5 minutes
+Static Files	WhiteNoise in development; S3 + CloudFront in production
+Database Indexes	On product.slug, order.order_number, order.customer, product.collection
+
+16. Testing Strategy
+16.1 Test Types
+Unit Tests	pytest-django; models, forms, utility functions (target ≥ 80 % coverage)
+Integration Tests	View-level tests using Django test client; cart flow, checkout flow
+Payment Tests	Stripe test mode; simulate successful charge, failed card, webhook delivery
+UI / E2E Tests	Playwright (optional Phase 2); critical paths: add-to-cart → checkout → success
+Performance Tests	Lighthouse CI in GitHub Actions on each PR
+Security Scan	bandit (Python static analysis), Safety (dependency CVE check)
+
+17. Deployment & DevOps
+17.1 Environments
+Development	Local: SQLite or PostgreSQL; Django dev server; DEBUG=True
+Staging	Railway/Render free tier; PostgreSQL; DEBUG=False; Stripe test keys
+Production	Railway/Render paid or AWS EC2; PostgreSQL; Gunicorn + Nginx; SSL; Stripe live keys
+
+17.2 Environment Variables (.env)
+•	SECRET_KEY, DEBUG, ALLOWED_HOSTS
+•	DATABASE_URL
+•	STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+•	PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET
+•	AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME
+•	EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD (or SENDGRID_API_KEY)
+•	REDIS_URL
+•	MAILCHIMP_WEBHOOK_URL (optional)
+
+17.3 CI/CD Pipeline (GitHub Actions)
+1.	On pull request: lint (flake8, black), run pytest, Lighthouse CI
+2.	On merge to main: auto-deploy to staging
+3.	On release tag: auto-deploy to production
+
+18. Development Milestones
+Phase	Milestone	Deliverables	Est. Weeks
+1	Project Setup	Django project scaffold, PostgreSQL, CI/CD, base templates, Tailwind	1
+2	Catalogue	Product, Collection, Variant models; PLP + PDP; image upload; admin	2–3
+3	Cart & Checkout	Cart session, checkout flow, Stripe integration, order model, emails	2–3
+4	Accounts	Register, login, profile, order history, wishlist	1–2
+5	Homepage	Hero slideshow, carousels, collections grid, brand story, testimonials	1–2
+6	Promotions	Coupon codes, sale prices, announcement bar editor	1
+7	Static Pages	Contact form, Shipping, Returns, Size Chart, About	1
+8	Reviews	Submit, approve, display reviews + ratings	1
+9	SEO & Performance	Sitemap, schema, meta tags, image optimisation, caching	1
+10	Testing & Launch	Full test pass, staging QA, production deploy, DNS	1–2
+Total estimated development time: 12–18 weeks (solo full-stack developer). Can be parallelised across 2 developers to reduce to 8–10 weeks.
+
+19. Open Items & Assumptions
+19.1 Pending from Client
+•	Colour palette — [TO BE CONFIRMED BY CLIENT — client-supplied palette]
+•	Brand logo files (SVG and PNG formats)
+•	Product photography and initial product catalogue (CSV or manual entry)
+•	Confirmed payment methods for Australia (AfterPay threshold, etc.)
+•	Preferred domain name and hosting provider
+•	Mailchimp account details (if newsletter integration required)
+•	Instagram account handle for social links
+
+19.2 Assumptions
+•	The site will be English-language only at launch.
+•	Currency displayed in AUD by default; no live multi-currency conversion in Phase 1.
+•	All products are shipped from Australia; no dropship or multi-warehouse logic required.
+•	The store owner will manage product uploads and order fulfilment themselves.
+•	Phase 1 search will use PostgreSQL full-text search; Typesense/Elasticsearch considered for Phase 2.
+
+20. Glossary
+PLP	Product Listing Page — the collection/category grid
+PDP	Product Detail Page — individual product page
+SKU	Stock Keeping Unit — unique identifier per product variant
+BNPL	Buy Now Pay Later (AfterPay, Klarna, etc.)
+LCP	Largest Contentful Paint — Core Web Vital for perceived load speed
+CTA	Call to Action — button or link prompting user action
+DXA	Document-internal unit used by docx; 1440 DXA = 1 inch
+ORM	Object-Relational Mapper — Django's database abstraction layer
+TTL	Time To Live — cache expiry duration
+
+
+Wonzays Kollections  |  PRD v1.0  |  Karalee, Ipswich QLD Australia  |  May 2026

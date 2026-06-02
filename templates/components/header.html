@@ -1,0 +1,176 @@
+{% load static %}
+<header id="site-header"
+  x-data="{
+    open: false,
+    shopOpen: false,
+    scrolled: false,
+    onScroll() { this.scrolled = window.scrollY > 50 }
+  }"
+  x-init="onScroll(); window.addEventListener('scroll', () => onScroll())"
+  :class="scrolled ? 'bg-white shadow-header' : 'bg-transparent'"
+  style="position:fixed;top:0;left:0;right:0;z-index:1000;transition:background 0.4s ease,box-shadow 0.4s ease;">
+
+  <div style="max-width:1400px;margin:0 auto;padding:0 2rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;height:72px;">
+
+      <!-- Logo -->
+      <a href="{% url 'store:home' %}" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;flex-shrink:0;">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,#5B4B8A,#3D2F5C);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <span style="color:white;font-family:'Playfair Display',serif;font-weight:800;font-size:16px;">W</span>
+        </div>
+        <div style="line-height:1.1;">
+          <span :style="scrolled ? 'color:#1F1F23' : 'color:white'"
+                style="font-family:'Playfair Display',serif;font-weight:700;font-size:17px;letter-spacing:-0.02em;display:block;transition:color 0.3s;">
+            Wonzays
+          </span>
+          <span :style="scrolled ? 'color:#5B4B8A' : 'color:rgba(255,255,255,0.75)'"
+                style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;display:block;transition:color 0.3s;">
+            Kollections
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav style="display:none;" class="lg-flex" style="display:flex;align-items:center;gap:2.5rem;">
+        <a href="{% url 'store:home' %}"
+           :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+           style="font-size:0.9rem;font-weight:500;text-decoration:none;transition:color 0.2s;letter-spacing:0.01em;">
+          Home
+        </a>
+
+        <!-- Shop dropdown -->
+        <div style="position:relative;" @mouseenter="shopOpen=true" @mouseleave="shopOpen=false">
+          <button :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+                  style="display:flex;align-items:center;gap:5px;font-size:0.9rem;font-weight:500;background:none;border:none;cursor:pointer;transition:color 0.2s;">
+            Shop
+            <svg :style="shopOpen ? 'transform:rotate(180deg)' : ''"
+                 style="width:14px;height:14px;transition:transform 0.25s;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div x-show="shopOpen"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
+               x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+               style="display:none;position:absolute;top:calc(100% + 1rem);left:50%;transform:translateX(-50%);width:240px;background:white;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);overflow:hidden;border:1px solid #E8E4F5;">
+            <div style="padding:0.75rem;">
+              <a href="{% url 'store:collection_list' %}"
+                 style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-weight:600;font-size:0.9rem;color:#3D2F5C;text-decoration:none;background:#F3F0FF;margin-bottom:6px;"
+                 onmouseover="this.style.background='#E8E4F5'" onmouseout="this.style.background='#F3F0FF'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                Shop All
+              </a>
+              <a href="{% url 'store:collection_detail' 'new-arrivals' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">New Arrivals</a>
+              <a href="{% url 'store:collection_detail' 'dresses' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">Dresses</a>
+              <a href="{% url 'store:collection_detail' 'sets' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">Sets</a>
+              <a href="{% url 'store:collection_detail' 'jumpsuits' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">Jumpsuits</a>
+              <a href="{% url 'store:collection_detail' 'men' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">Men</a>
+              <a href="{% url 'store:collection_detail' 'accessories' %}" style="display:block;padding:9px 14px;border-radius:10px;font-size:0.875rem;color:#1F1F23;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#F3F0FF';this.style.color='#5B4B8A'" onmouseout="this.style.background='transparent';this.style.color='#1F1F23'">Accessories</a>
+            </div>
+          </div>
+        </div>
+
+        <a href="{% url 'store:collection_list' %}"
+           :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+           style="font-size:0.9rem;font-weight:500;text-decoration:none;transition:color 0.2s;">Collections</a>
+        <a href="{% url 'pages:static_page' 'about' %}"
+           :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+           style="font-size:0.9rem;font-weight:500;text-decoration:none;transition:color 0.2s;">About</a>
+        <a href="{% url 'pages:contact' %}"
+           :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+           style="font-size:0.9rem;font-weight:500;text-decoration:none;transition:color 0.2s;">Contact</a>
+      </nav>
+
+      <!-- Right icons -->
+      <div style="display:flex;align-items:center;gap:4px;">
+        <!-- Search -->
+        <button data-open-search aria-label="Search"
+                :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+                style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:10px;transition:all 0.2s;"
+                onmouseover="this.style.background='rgba(91,75,138,0.1)'" onmouseout="this.style.background='transparent'">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <!-- Account -->
+        <a href="{% if user.is_authenticated %}{% url 'accounts:profile' %}{% else %}{% url 'accounts:login' %}{% endif %}"
+           aria-label="Account"
+           :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+           style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:all 0.2s;"
+           onmouseover="this.style.background='rgba(91,75,138,0.1)'" onmouseout="this.style.background='transparent'">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+          </svg>
+        </a>
+
+        <!-- Cart -->
+        <button data-open-cart aria-label="Open cart"
+                :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+                style="position:relative;width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:10px;transition:all 0.2s;"
+                onmouseover="this.style.background='rgba(91,75,138,0.1)'" onmouseout="this.style.background='transparent'">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span id="cart-count-badge"
+                style="position:absolute;top:6px;right:6px;min-width:18px;height:18px;background:#5B4B8A;color:white;font-size:10px;font-weight:700;border-radius:50%;display:{% if cart_item_count > 0 %}flex{% else %}none{% endif %};align-items:center;justify-content:center;border:2px solid white;">{{ cart_item_count }}</span>
+        </button>
+
+        <!-- Mobile menu toggle -->
+        <button @click="open=!open" aria-label="Toggle menu"
+                :style="scrolled ? 'color:#1F1F23' : 'color:rgba(255,255,255,0.9)'"
+                style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;border-radius:10px;"
+                class="lg-hidden">
+          <svg x-show="!open" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="open" style="display:none;" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div x-show="open"
+       x-transition:enter="transition ease-out duration-250"
+       x-transition:enter-start="opacity-0 -translate-y-4"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       style="display:none;background:white;border-top:1px solid #E8E4F5;box-shadow:0 20px 40px rgba(0,0,0,0.1);">
+    <nav style="max-width:1400px;margin:0 auto;padding:1.5rem 2rem;display:flex;flex-direction:column;gap:4px;">
+      <a href="{% url 'store:home' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:500;color:#1F1F23;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Home</a>
+      <a href="{% url 'store:collection_list' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:600;color:#5B4B8A;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Shop All</a>
+      <a href="{% url 'store:collection_detail' 'new-arrivals' %}" style="padding:10px 32px;border-radius:10px;font-size:0.9rem;color:#6B6B7C;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">New Arrivals</a>
+      <a href="{% url 'store:collection_detail' 'dresses' %}" style="padding:10px 32px;border-radius:10px;font-size:0.9rem;color:#6B6B7C;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Dresses</a>
+      <a href="{% url 'store:collection_detail' 'sets' %}" style="padding:10px 32px;border-radius:10px;font-size:0.9rem;color:#6B6B7C;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Sets</a>
+      <a href="{% url 'store:collection_detail' 'jumpsuits' %}" style="padding:10px 32px;border-radius:10px;font-size:0.9rem;color:#6B6B7C;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Jumpsuits</a>
+      <a href="{% url 'pages:static_page' 'about' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:500;color:#1F1F23;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">About</a>
+      <a href="{% url 'pages:contact' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:500;color:#1F1F23;text-decoration:none;" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='transparent'">Contact</a>
+      <div style="border-top:1px solid #E8E4F5;margin-top:8px;padding-top:8px;">
+        {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:500;color:#5B4B8A;text-decoration:none;display:block;">My Account</a>
+        <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}
+          <button type="submit" style="width:100%;text-align:left;padding:12px 16px;border-radius:10px;font-size:1rem;color:#EF4444;background:none;border:none;cursor:pointer;">Sign Out</button>
+        </form>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" style="padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:500;color:#1F1F23;text-decoration:none;display:block;">Sign In</a>
+        <a href="{% url 'accounts:register' %}" style="display:block;margin:8px 16px;padding:12px 24px;background:#5B4B8A;color:white;border-radius:10px;font-size:0.9rem;font-weight:600;text-decoration:none;text-align:center;">Create Account</a>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+
+</header>
+
+<style>
+  .shadow-header { box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.06); }
+  @media (min-width: 1024px) {
+    .lg-flex { display: flex !important; }
+    .lg-hidden { display: none !important; }
+  }
+  @media (max-width: 1023px) {
+    .lg-flex { display: none !important; }
+  }
+</style>

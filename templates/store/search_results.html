@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Search: "{{ query }}" — Wonzays Kollections{% endblock %}
+
+{% block content %}
+<div class="section py-10">
+  <h1 class="font-serif font-bold text-3xl mb-2">
+    {% if query %}Search results for "{{ query }}"{% else %}Search{% endif %}
+  </h1>
+  <p class="text-[var(--color-text-muted)] mb-8">
+    {% if products %}{{ paginator.count }} product{{ paginator.count|pluralize }} found{% endif %}
+  </p>
+
+  <!-- Search bar -->
+  <form action="{% url 'search:results' %}" method="get" class="flex mb-10 max-w-md">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search products…"
+           class="input flex-1" />
+    <button type="submit" class="btn-primary px-6">Search</button>
+  </form>
+
+  {% if products %}
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for product in products %}{% include "components/product_card.html" with product=product %}{% endfor %}
+  </div>
+
+  {% if is_paginated %}
+  <div class="flex items-center justify-center gap-2 mt-12">
+    {% if page_obj.has_previous %}
+    <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}" class="btn-secondary px-5 py-2 text-sm">← Prev</a>
+    {% endif %}
+    <span class="text-sm text-[var(--color-text-muted)]">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?q={{ query }}&page={{ page_obj.next_page_number }}" class="btn-secondary px-5 py-2 text-sm">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% elif query %}
+  <div class="text-center py-20">
+    <p class="text-lg text-[var(--color-text-muted)] mb-4">No results for "{{ query }}"</p>
+    <a href="{% url 'store:collection_list' %}" class="btn-primary">Browse Collections</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

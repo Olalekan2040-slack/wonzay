@@ -1,0 +1,16 @@
+Django==5.2
+psycopg2-binary==2.9.10
+Pillow==11.2.1
+django-environ==0.11.2
+whitenoise==6.9.0
+django-crispy-forms==2.4
+crispy-tailwind==1.0.3
+django-imagekit==5.0
+stripe==12.0.0
+django-axes==7.0.1
+django-storages==1.14.4
+boto3==1.38.19
+sendgrid==6.11.0
+celery==5.5.2
+redis==6.2.0
+django-redis==5.4.0

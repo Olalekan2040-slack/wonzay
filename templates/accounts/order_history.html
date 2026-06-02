@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static store_tags %}
+
+{% block title %}Order History — Wonzays Kollections{% endblock %}
+
+{% block content %}
+<div class="section py-10">
+  <h1 class="font-serif font-bold text-3xl mb-8">My Account</h1>
+  <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8">
+    <nav class="flex flex-row lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0">
+      {% for label, url_name in profile_nav %}
+      <a href="{% url url_name %}"
+         class="text-sm font-medium px-4 py-2.5 whitespace-nowrap transition {% if request.resolver_match.url_name == url_name|slice:"9:" %}bg-[var(--color-primary)] text-white{% else %}hover:bg-[var(--color-surface)]{% endif %}">
+        {{ label }}
+      </a>
+      {% endfor %}
+      <form action="{% url 'accounts:logout' %}" method="post" class="mt-2">
+        {% csrf_token %}
+        <button type="submit" class="text-sm font-medium px-4 py-2.5 w-full text-left text-red-500 hover:bg-red-50 transition">Logout</button>
+      </form>
+    </nav>
+
+    <div>
+      <h2 class="font-serif font-bold text-xl mb-6">Order History</h2>
+      {% if orders %}
+      <div class="flex flex-col gap-4">
+        {% for order in orders %}
+        <div class="border border-[var(--color-border)] p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="font-semibold text-sm">Order #{{ order.order_number|slice:":8"|upper }}</p>
+              <p class="text-xs text-[var(--color-text-muted)]">{{ order.created_at|date:"d M Y" }}</p>
+            </div>
+            <div class="text-right">
+              <span class="badge-new text-xs">{{ order.get_status_display }}</span>
+              <p class="font-bold mt-1">${{ order.total }}</p>
+            </div>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            {% for item in order.items.all|slice:":3" %}
+            <span class="text-xs text-[var(--color-text-muted)]">{{ item.product_name }} x{{ item.quantity }}</span>
+            {% endfor %}
+            {% if order.items.count > 3 %}<span class="text-xs text-[var(--color-text-muted)]">+{{ order.items.count|add:"-3" }} more</span>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-16">
+        <p class="text-[var(--color-text-muted)] mb-4">You haven't placed any orders yet.</p>
+        <a href="{% url 'store:collection_list' %}" class="btn-primary">Start Shopping</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

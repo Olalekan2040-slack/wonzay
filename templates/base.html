@@ -1,0 +1,79 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>{% block title %}Wonzays Kollections — Contemporary African Fashion{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Shop Wonzays Kollections — contemporary African fashion, dresses, sets, jumpsuits and more. Shipping Australia-wide.{% endblock %}" />
+  <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{% block og_title %}Wonzays Kollections{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}Contemporary African Fashion — Dresses, Sets, Jumpsuits & More{% endblock %}" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  {% block og_image %}{% endblock %}
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%235B4B8A' width='100' height='100'/%3E%3Ctext x='50' y='70' font-family='serif' font-size='60' font-weight='bold' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+  {% block extra_head %}{% endblock %}
+
+  <style>
+    /* Prevent layout shift from scrollbar */
+    html { scrollbar-gutter: stable; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" style="position:absolute;left:-9999px;z-index:1;">Skip to main content</a>
+
+  <!-- Announcement bar -->
+  {% include "components/announcement_bar.html" %}
+
+  <!-- Header -->
+  {% include "components/header.html" %}
+
+  <!-- Messages toast -->
+  {% if messages %}
+  <div style="position:fixed;top:2rem;right:2rem;z-index:9000;display:flex;flex-direction:column;gap:1rem;pointer-events:none;">
+    {% for message in messages %}
+    <div class="toast {% if message.tags == 'error' %}toast-error{% elif message.tags == 'warning' %}toast-warning{% else %}toast-success{% endif %}"
+         style="pointer-events:auto;"
+         role="status" aria-live="polite">
+      <span>{{ message }}</span>
+      <button class="toast__close" aria-label="Dismiss" onclick="this.closest('.toast').remove();">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main content -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  {% include "components/footer.html" %}
+
+  <!-- Modals & Drawers -->
+  {% include "components/cart_drawer.html" %}
+  {% include "components/search_overlay.html" %}
+  {% include "components/quick_buy_drawer.html" %}
+  {% include "components/newsletter_popup.html" %}
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

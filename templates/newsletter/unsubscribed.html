@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Unsubscribed — Wonzays Kollections{% endblock %}
+{% block content %}
+<div class="section py-20 text-center max-w-md mx-auto">
+  <h1 class="font-serif font-bold text-2xl mb-3">You've been unsubscribed</h1>
+  <p class="text-[var(--color-text-muted)] mb-6">You'll no longer receive marketing emails from us.</p>
+  <a href="{% url 'store:home' %}" class="btn-secondary">Return to Store</a>
+</div>
+{% endblock %}

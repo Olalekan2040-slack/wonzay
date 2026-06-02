@@ -1,0 +1,119 @@
+{% load static %}
+{% if cart_items %}
+
+<div style="display:flex;flex-direction:column;gap:0;">
+  {% for item in cart_items %}
+  <div style="display:flex;gap:1rem;padding:1.25rem 0;border-bottom:1px solid #E8E4F5;align-items:flex-start;">
+
+    <!-- Thumbnail -->
+    <a href="{{ item.product.get_absolute_url }}" style="flex-shrink:0;display:block;width:80px;height:96px;border-radius:12px;overflow:hidden;background:#F7F5FF;text-decoration:none;">
+      {% if item.product.primary_image %}
+      <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}"
+           style="width:100%;height:100%;object-fit:cover;" />
+      {% else %}
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+        <svg width="28" height="28" fill="none" stroke="#C4B5FD" stroke-width="1.2" viewBox="0 0 24 24">
+          <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+        </svg>
+      </div>
+      {% endif %}
+    </a>
+
+    <!-- Details -->
+    <div style="flex:1;min-width:0;">
+      <a href="{{ item.product.get_absolute_url }}" style="font-size:0.9rem;font-weight:600;color:#1F1F23;text-decoration:none;display:block;margin-bottom:3px;line-height:1.35;">{{ item.product.name }}</a>
+      {% if item.variant %}
+      <p style="font-size:0.78rem;color:#A7A7B8;margin:0 0 8px;">{{ item.variant.name }}</p>
+      {% endif %}
+
+      <!-- Quantity controls -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <div style="display:flex;align-items:center;background:#F7F5FF;border-radius:8px;overflow:hidden;">
+          <form action="{% url 'cart:update' %}" method="post" style="margin:0;padding:0;line-height:0;">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" value="{{ item.pk }}" />
+            <input type="hidden" name="quantity" value="{{ item.quantity|add:'-1' }}" />
+            <button type="submit"
+                    style="width:30px;height:30px;background:none;border:none;cursor:pointer;font-size:1.1rem;color:#6B6B7C;display:flex;align-items:center;justify-content:center;"
+                    onmouseover="this.style.background='#E8E4F5'" onmouseout="this.style.background='none'">−</button>
+          </form>
+          <span style="font-size:0.9rem;font-weight:600;color:#1F1F23;min-width:24px;text-align:center;">{{ item.quantity }}</span>
+          <form action="{% url 'cart:update' %}" method="post" style="margin:0;padding:0;line-height:0;">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" value="{{ item.pk }}" />
+            <input type="hidden" name="quantity" value="{{ item.quantity|add:'1' }}" />
+            <button type="submit"
+                    style="width:30px;height:30px;background:none;border:none;cursor:pointer;font-size:1.1rem;color:#6B6B7C;display:flex;align-items:center;justify-content:center;"
+                    onmouseover="this.style.background='#E8E4F5'" onmouseout="this.style.background='none'">+</button>
+          </form>
+        </div>
+
+        <form action="{% url 'cart:remove' %}" method="post" style="margin:0;padding:0;">
+          {% csrf_token %}
+          <input type="hidden" name="item_id" value="{{ item.pk }}" />
+          <button type="submit"
+                  style="background:none;border:none;cursor:pointer;color:#A7A7B8;font-size:0.78rem;padding:5px 8px;border-radius:6px;transition:all 0.2s;"
+                  onmouseover="this.style.background='#FEF2F2';this.style.color='#EF4444'" onmouseout="this.style.background='none';this.style.color='#A7A7B8'">
+            Remove
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div style="text-align:right;flex-shrink:0;padding-top:2px;">
+      <span style="font-size:1rem;font-weight:700;color:#1F1F23;">${{ item.line_total }}</span>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Totals + CTA -->
+<div style="padding-top:1.25rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <span style="font-size:0.875rem;color:#6B6B7C;font-weight:500;">Subtotal</span>
+    <span style="font-family:'Playfair Display',serif;font-size:1.375rem;font-weight:700;color:#1F1F23;">${{ cart_total }}</span>
+  </div>
+  <p style="font-size:0.78rem;color:#A7A7B8;margin-bottom:1.25rem;">Shipping &amp; taxes calculated at checkout</p>
+
+  <a href="{% url 'orders:checkout' %}"
+     style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#2D1563;color:white;border-radius:12px;font-size:0.9375rem;font-weight:700;text-decoration:none;transition:background 0.2s;margin-bottom:10px;"
+     onmouseover="this.style.background='#5B4B8A'" onmouseout="this.style.background='#2D1563'">
+    Checkout
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+    </svg>
+  </a>
+
+  <a href="{% url 'cart:detail' %}"
+     style="display:block;text-align:center;padding:11px;background:#F7F5FF;color:#5B4B8A;border-radius:12px;font-size:0.875rem;font-weight:600;text-decoration:none;transition:background 0.2s;"
+     onmouseover="this.style.background='#E8E4F5'" onmouseout="this.style.background='#F7F5FF'">
+    View Cart
+  </a>
+
+  <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:1rem;color:#A7A7B8;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+    </svg>
+    <span style="font-size:0.75rem;">Pay in 4 with <strong style="color:#5B4B8A;">AfterPay</strong>. No interest.</span>
+  </div>
+</div>
+
+{% else %}
+<!-- Empty state -->
+<div style="text-align:center;padding:3rem 1rem;display:flex;flex-direction:column;align-items:center;gap:1rem;">
+  <div style="width:80px;height:80px;background:#F7F5FF;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+    <svg width="36" height="36" fill="none" stroke="#5B4B8A" stroke-width="1.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+    </svg>
+  </div>
+  <h3 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#1F1F23;margin:0;">Your cart is empty</h3>
+  <p style="font-size:0.875rem;color:#A7A7B8;margin:0;">Add some gorgeous pieces to get started.</p>
+  <a href="{% url 'store:collection_list' %}"
+     style="display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:#2D1563;color:white;border-radius:12px;font-size:0.875rem;font-weight:600;text-decoration:none;transition:background 0.2s;margin-top:0.5rem;"
+     onmouseover="this.style.background='#5B4B8A'" onmouseout="this.style.background='#2D1563'">
+    Shop Now
+  </a>
+</div>
+{% endif %}

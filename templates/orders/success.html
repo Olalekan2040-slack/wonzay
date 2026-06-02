@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static store_tags %}
+
+{% block title %}Order Confirmed — Wonzays Kollections{% endblock %}
+
+{% block content %}
+<div class="section py-16 max-w-2xl mx-auto text-center">
+  <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+  </div>
+  <h1 class="font-serif font-bold text-4xl mb-3">Thank you!</h1>
+  <p class="text-[var(--color-text-muted)] text-lg mb-2">Your order has been placed successfully.</p>
+  <p class="text-sm text-[var(--color-text-muted)] mb-10">A confirmation email has been sent to {{ order.customer.email|default:order.guest_email }}.</p>
+
+  <div class="border border-[var(--color-border)] p-6 text-left mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-serif font-bold text-lg">Order Details</h2>
+      <span class="badge-new">{{ order.get_status_display }}</span>
+    </div>
+    <p class="text-sm text-[var(--color-text-muted)] mb-4">Order #<span class="font-semibold text-[var(--color-text)]">{{ order.order_number|slice:":8"|upper }}</span></p>
+
+    <div class="divide-y divide-[var(--color-border)]">
+      {% for item in order.items.all %}
+      <div class="flex items-center justify-between py-3 gap-4">
+        <p class="text-sm font-medium">{{ item.product_name }} <span class="text-[var(--color-text-muted)]">× {{ item.quantity }}</span></p>
+        <p class="text-sm font-semibold flex-shrink-0">${{ item.line_total }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-[var(--color-border)] space-y-1.5 text-sm">
+      <div class="flex justify-between"><span class="text-[var(--color-text-muted)]">Subtotal</span><span>${{ order.subtotal }}</span></div>
+      <div class="flex justify-between"><span class="text-[var(--color-text-muted)]">Shipping</span><span>${{ order.shipping_cost }}</span></div>
+      {% if order.discount_amount %}<div class="flex justify-between text-green-600"><span>Discount</span><span>−${{ order.discount_amount }}</span></div>{% endif %}
+      <div class="flex justify-between font-bold text-base pt-2 border-t border-[var(--color-border)]"><span>Total</span><span>${{ order.total }}</span></div>
+    </div>
+
+    {% if order.shipping_address %}
+    <div class="mt-5 pt-5 border-t border-[var(--color-border)]">
+      <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)] mb-2">Ship To</p>
+      <p class="text-sm">{{ order.shipping_address.full_name }}</p>
+      <p class="text-sm text-[var(--color-text-muted)]">{{ order.shipping_address.address_line1 }}{% if order.shipping_address.address_line2 %}, {{ order.shipping_address.address_line2 }}{% endif %}</p>
+      <p class="text-sm text-[var(--color-text-muted)]">{{ order.shipping_address.city }} {{ order.shipping_address.state }} {{ order.shipping_address.postcode }}, {{ order.shipping_address.country }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <a href="{% url 'store:collection_list' %}" class="btn-primary">Continue Shopping</a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'accounts:order_history' %}" class="btn-secondary">View My Orders</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

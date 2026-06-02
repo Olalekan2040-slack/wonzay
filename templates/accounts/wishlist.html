@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Wishlist — Wonzays Kollections{% endblock %}
+
+{% block content %}
+<div class="section py-10">
+  <h1 class="font-serif font-bold text-3xl mb-8">My Account</h1>
+  <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8">
+    <nav class="flex flex-row lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0">
+      {% for label, url_name in profile_nav %}
+      <a href="{% url url_name %}"
+         class="text-sm font-medium px-4 py-2.5 whitespace-nowrap transition {% if request.resolver_match.url_name == url_name|slice:"9:" %}bg-[var(--color-primary)] text-white{% else %}hover:bg-[var(--color-surface)]{% endif %}">
+        {{ label }}
+      </a>
+      {% endfor %}
+      <form action="{% url 'accounts:logout' %}" method="post" class="mt-2">
+        {% csrf_token %}
+        <button type="submit" class="text-sm font-medium px-4 py-2.5 w-full text-left text-red-500 hover:bg-red-50 transition">Logout</button>
+      </form>
+    </nav>
+
+    <div>
+      <h2 class="font-serif font-bold text-xl mb-6">My Wishlist</h2>
+      {% if wishlist_items %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for item in wishlist_items %}{% include "components/product_card.html" with product=item.product %}{% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-16">
+        <p class="text-[var(--color-text-muted)] mb-4">Your wishlist is empty.</p>
+        <a href="{% url 'store:collection_list' %}" class="btn-primary">Discover Products</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

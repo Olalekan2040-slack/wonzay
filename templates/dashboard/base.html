@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Dashboard{% endblock %} — Wonzays Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+</head>
+<body class="flex min-h-screen bg-gray-50 font-sans text-[var(--color-text)]">
+
+  <!-- Sidebar -->
+  <aside class="w-60 bg-[var(--color-text)] text-white flex flex-col flex-shrink-0 hidden lg:flex">
+    <div class="px-6 py-5 border-b border-white/10">
+      <span class="font-serif font-bold text-xl text-white">Wonzays</span>
+      <span class="block text-[10px] uppercase tracking-[0.25em] text-white/40 mt-0.5">Owner Dashboard</span>
+    </div>
+    <nav class="flex-1 py-4 overflow-y-auto">
+      {% for label, url_name, icon in dashboard_nav %}
+      <a href="{% url url_name %}"
+         class="flex items-center gap-3 px-6 py-2.5 text-sm transition
+                {% if request.resolver_match.url_name == url_name %}bg-[var(--color-primary)] text-white{% else %}text-white/70 hover:text-white hover:bg-white/10{% endif %}">
+        {{ icon|safe }} {{ label }}
+      </a>
+      {% endfor %}
+    </nav>
+    <div class="px-6 py-4 border-t border-white/10">
+      <a href="{% url 'store:home' %}" class="text-xs text-white/50 hover:text-white transition">← Back to Store</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="bg-white border-b border-[var(--color-border)] px-6 py-4 flex items-center justify-between">
+      <h1 class="font-semibold text-base">{% block page_title %}Dashboard{% endblock %}</h1>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-[var(--color-text-muted)]">{{ user.get_full_name|default:user.email }}</span>
+        <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}<button class="text-xs text-red-500 hover:text-red-700 transition">Logout</button></form>
+      </div>
+    </header>
+
+    {% if messages %}
+    <div class="px-6 pt-4">
+      {% for message in messages %}
+      <div class="{% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-700{% else %}bg-green-50 border-green-200 text-green-700{% endif %} border px-4 py-3 text-sm mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="flex-1 p-6 overflow-auto">{% block content %}{% endblock %}</main>
+  </div>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+</body>
+</html>

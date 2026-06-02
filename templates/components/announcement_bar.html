@@ -1,0 +1,31 @@
+{% load static %}
+<div id="announcement-bar"
+     x-data="{ current: 0, items: {{ announcement_bars|length|default:'1' }} }"
+     x-effect="$watch('current', () => document.querySelectorAll('[data-announcement]').forEach((el, i) => el.style.display = i === current ? 'block' : 'none'))"
+     style="background: linear-gradient(135deg, #3D2F5C 0%, #5B4B8A 100%); border-bottom: 1px solid rgba(91,75,138,0.2);">
+
+  <div style="display:flex;align-items:center;justify-content:center;padding:1rem;min-height:48px;position:relative;">
+
+    {% if announcement_bars %}
+      {% for bar in announcement_bars %}
+      <p data-announcement
+         style="{% if not forloop.first %}display:none;{% endif %}text-align:center;font-size:14px;font-weight:500;letter-spacing:0.02em;color:rgba(255,255,255,0.9);margin:0;">
+        {{ bar.message }}
+        {% if bar.coupon_code %}
+          <span style="color:#E8E4F5;font-weight:700;letter-spacing:0.04em;">{{ bar.coupon_code }}</span>
+        {% endif %}
+      </p>
+      {% endfor %}
+    {% else %}
+      <p style="text-align:center;font-size:14px;font-weight:500;letter-spacing:0.02em;color:rgba(255,255,255,0.9);margin:0;">
+        Free shipping on orders over $150 AUD • Use code <span style="color:#E8E4F5;font-weight:700;letter-spacing:0.04em;">WONZAYS10</span> for 10% off
+      </p>
+    {% endif %}
+
+    {% if announcement_bars|length > 1 %}
+    <button @click="current = (current - 1 + items) % items" aria-label="Previous" style="position:absolute;left:1rem;background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:0.5rem;font-size:1.2rem;">‹</button>
+    <button @click="current = (current + 1) % items" aria-label="Next" style="position:absolute;right:1rem;background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:0.5rem;font-size:1.2rem;">›</button>
+    {% endif %}
+
+  </div>
+</div>

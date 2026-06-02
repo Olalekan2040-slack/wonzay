@@ -1,0 +1,18 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Newsletter{% endblock %}
+{% block page_title %}Newsletter Subscribers{% endblock %}
+{% block content %}
+<p class="text-sm text-gray-500 mb-4">{{ subscribers|length }} active subscriber{{ subscribers|length|pluralize }}</p>
+<div class="bg-white border border-gray-200 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead><tr class="bg-gray-50 text-xs font-semibold uppercase tracking-wider text-gray-500 text-left"><th class="px-5 py-3">Email</th><th class="px-5 py-3">Name</th><th class="px-5 py-3">Source</th><th class="px-5 py-3">Active</th><th class="px-5 py-3">Joined</th></tr></thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for s in subscribers %}
+      <tr class="hover:bg-gray-50"><td class="px-5 py-3">{{ s.email }}</td><td class="px-5 py-3 text-gray-400">{{ s.first_name|default:"—" }}</td><td class="px-5 py-3 text-xs">{{ s.source }}</td><td class="px-5 py-3">{% if s.is_active %}✓{% else %}—{% endif %}</td><td class="px-5 py-3 text-xs text-gray-400">{{ s.subscribed_at|date:"d M Y" }}</td></tr>
+      {% empty %}
+      <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No subscribers yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

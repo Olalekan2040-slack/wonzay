@@ -1,0 +1,39 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Order #{{ order.order_number|slice:":8"|upper }}{% endblock %}
+{% block page_title %}Order #{{ order.order_number|slice:":8"|upper }}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 bg-white border border-gray-200 p-5">
+    <h2 class="font-semibold mb-4">Items</h2>
+    <table class="w-full text-sm">
+      <thead><tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"><th class="px-3 py-2">Product</th><th class="px-3 py-2">Variant</th><th class="px-3 py-2 text-right">Qty</th><th class="px-3 py-2 text-right">Total</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for item in order.items.all %}
+        <tr><td class="px-3 py-2">{{ item.product_name }}</td><td class="px-3 py-2 text-gray-400 text-xs">{{ item.variant_label }}</td><td class="px-3 py-2 text-right">{{ item.quantity }}</td><td class="px-3 py-2 text-right font-semibold">${{ item.line_total }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-4 pt-4 border-t space-y-1 text-sm text-right">
+      <p>Subtotal: <strong>${{ order.subtotal }}</strong></p>
+      <p>Shipping: <strong>${{ order.shipping_cost }}</strong></p>
+      <p class="text-base font-bold">Total: ${{ order.total }}</p>
+    </div>
+  </div>
+  <div class="flex flex-col gap-4">
+    <div class="bg-white border border-gray-200 p-5">
+      <h2 class="font-semibold mb-3">Customer</h2>
+      <p class="text-sm">{{ order.customer.get_full_name|default:"Guest" }}</p>
+      <p class="text-sm text-gray-400">{{ order.customer.email|default:order.guest_email }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 p-5">
+      <h2 class="font-semibold mb-3">Shipping Address</h2>
+      {% if order.shipping_address %}
+      <p class="text-sm">{{ order.shipping_address.full_name }}</p>
+      <p class="text-sm text-gray-400">{{ order.shipping_address.address_line1 }}</p>
+      <p class="text-sm text-gray-400">{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.postcode }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="mt-4"><a href="{% url 'dashboard:order_list' %}" class="btn-secondary text-sm px-5 py-2">← Back to Orders</a></div>
+{% endblock %}

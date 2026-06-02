@@ -1,0 +1,16 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Content Blocks{% endblock %}
+{% block page_title %}Content Blocks{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="bg-white border border-gray-200 p-5">
+    <h2 class="font-semibold mb-3">Announcement Bars</h2>
+    {% for bar in announcement_bars %}<p class="text-sm py-1 border-b border-gray-100 flex justify-between"><span class="truncate">{{ bar.message|truncatewords:8 }}</span><a href="/admin/content/announcementbar/{{ bar.pk }}/change/" class="text-blue-600 hover:underline text-xs ml-2 flex-shrink-0">Edit</a></p>{% empty %}<p class="text-sm text-gray-400">None. <a href="/admin/content/announcementbar/add/" class="text-blue-600 hover:underline">Add one →</a></p>{% endfor %}
+  </div>
+  <div class="bg-white border border-gray-200 p-5">
+    <h2 class="font-semibold mb-3">Hero Slides</h2>
+    {% for slide in hero_slides %}<p class="text-sm py-1 border-b border-gray-100 flex justify-between"><span class="truncate">{{ slide.headline|truncatewords:5 }}</span><a href="/admin/content/heroslide/{{ slide.pk }}/change/" class="text-blue-600 hover:underline text-xs ml-2 flex-shrink-0">Edit</a></p>{% empty %}<p class="text-sm text-gray-400">None. <a href="/admin/content/heroslide/add/" class="text-blue-600 hover:underline">Add one →</a></p>{% endfor %}
+    <p class="text-xs text-gray-400 mt-3">Full editing available in <a href="/admin/" class="text-blue-600 hover:underline">Django Admin</a>.</p>
+  </div>
+</div>
+{% endblock %}

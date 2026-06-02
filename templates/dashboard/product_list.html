@@ -1,0 +1,32 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Products{% endblock %}
+{% block page_title %}Products{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <p class="text-sm text-gray-500">{{ products.paginator.count|default:products|length }} products</p>
+  <a href="{% url 'dashboard:product_add' %}" class="btn-primary text-sm px-5 py-2.5">+ Add Product</a>
+</div>
+<div class="bg-white border border-gray-200 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead><tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+      <th class="px-5 py-3">Product</th><th class="px-5 py-3">Collection</th><th class="px-5 py-3">Price</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Actions</th>
+    </tr></thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for p in products %}
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-5 py-3 font-medium">{{ p.name }}</td>
+        <td class="px-5 py-3 text-gray-500">{{ p.collection.name|default:"—" }}</td>
+        <td class="px-5 py-3">${{ p.price }}</td>
+        <td class="px-5 py-3">{% if p.is_active %}<span class="badge-new text-xs">Active</span>{% else %}<span class="badge-sold-out text-xs">Inactive</span>{% endif %}</td>
+        <td class="px-5 py-3 flex gap-3">
+          <a href="{% url 'dashboard:product_edit' p.pk %}" class="text-blue-600 hover:underline text-xs">Edit</a>
+          <a href="{{ p.get_absolute_url }}" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No products yet. <a href="{% url 'dashboard:product_add' %}" class="text-purple-600 hover:underline">Add one →</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

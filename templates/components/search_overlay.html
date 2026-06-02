@@ -1,0 +1,33 @@
+{% load static %}
+<div id="search-overlay"
+     style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(26,10,56,0.65);backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding-top:8rem;">
+  <div style="width:100%;max-width:680px;padding:0 1.5rem;" onclick="event.stopPropagation()">
+
+    <!-- Input -->
+    <div style="position:relative;animation:slideUp 0.25s ease;">
+      <div style="position:absolute;left:1.25rem;top:50%;transform:translateY(-50%);color:#A7A3C0;pointer-events:none;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/>
+        </svg>
+      </div>
+      <input id="search-input" type="search" placeholder="Search dresses, sets, jumpsuits…" autocomplete="off"
+             style="width:100%;padding:1.25rem 3.5rem;background:#fff;border:none;border-radius:16px;font-size:1.0625rem;color:#1A1A2E;outline:none;box-shadow:0 20px 60px rgba(0,0,0,0.25);" />
+      <button id="search-close"
+              style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:36px;height:36px;background:#F5F3FC;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6B6880;transition:background 0.2s;"
+              onmouseover="this.style.background='#E0DBF0'" onmouseout="this.style.background='#F5F3FC'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Results dropdown -->
+    <div id="search-results"
+         style="background:#fff;border-radius:16px;margin-top:0.75rem;overflow:hidden;max-height:440px;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);">
+    </div>
+
+    <p style="text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.35);margin-top:1.25rem;">
+      Press <kbd style="background:rgba(255,255,255,0.12);padding:2px 8px;border-radius:5px;font-family:monospace;font-size:0.75rem;">Esc</kbd> to close
+    </p>
+  </div>
+</div>

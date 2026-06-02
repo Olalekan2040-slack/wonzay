@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static/css/output.css
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Tailwind CLI binary
+tailwindcss.exe
+tailwindcss
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+celerybeat-schedule
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/

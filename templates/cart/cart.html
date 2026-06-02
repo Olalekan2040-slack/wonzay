@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static store_tags %}
+
+{% block title %}Your Cart — Wonzays Kollections{% endblock %}
+
+{% block content %}
+<div class="section py-10">
+  <h1 class="font-serif font-bold text-3xl mb-8">Your Cart</h1>
+
+  {% if cart and cart.items.exists %}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+    <!-- Cart items -->
+    <div class="lg:col-span-2">
+      <div class="border-b border-[var(--color-border)] pb-2 mb-2 hidden sm:grid sm:grid-cols-[2fr_1fr_1fr_auto] gap-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
+        <span>Product</span><span class="text-center">Qty</span><span class="text-right">Total</span><span></span>
+      </div>
+
+      {% for item in cart.items.select_related %}
+      <div class="grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_1fr_1fr_auto] items-center gap-4 py-5 border-b border-[var(--color-border)]">
+        <!-- Image -->
+        <a href="{{ item.product.get_absolute_url }}" class="flex-shrink-0">
+          {% with img=item.product.primary_image %}
+          {% if img %}
+          <img src="{{ img.image.url }}" alt="{{ item.product.name }}" class="w-20 h-28 sm:w-24 sm:h-32 object-cover" />
+          {% else %}
+          <div class="w-20 h-28 sm:w-24 sm:h-32 bg-[var(--color-primary-light)] flex items-center justify-center"><span class="text-2xl text-[var(--color-primary)] opacity-30">W</span></div>
+          {% endif %}
+          {% endwith %}
+        </a>
+        <!-- Info -->
+        <div class="col-span-1 sm:col-auto">
+          <a href="{{ item.product.get_absolute_url }}" class="font-medium text-sm hover:text-[var(--color-primary)] transition leading-snug block">{{ item.product.name }}</a>
+          {% if item.variant %}
+          <p class="text-xs text-[var(--color-text-muted)] mt-1">
+            {% if item.variant.size %}Size: {{ item.variant.size }}{% endif %}
+            {% if item.variant.colour %}{% if item.variant.size %} · {% endif %}{{ item.variant.colour }}{% endif %}
+          </p>
+          {% endif %}
+          <p class="text-sm font-semibold mt-1">${{ item.unit_price }}</p>
+        </div>
+        <!-- Qty -->
+        <div class="hidden sm:flex items-center justify-center border border-[var(--color-border)]">
+          <form action="{% url 'cart:update' %}" method="post" class="flex items-center">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" value="{{ item.pk }}" />
+            <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="w-8 h-9 hover:bg-[var(--color-surface)] transition text-lg font-light">−</button>
+            <span class="w-8 h-9 flex items-center justify-center text-sm font-medium border-x border-[var(--color-border)]">{{ item.quantity }}</span>
+            <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="w-8 h-9 hover:bg-[var(--color-surface)] transition text-lg font-light">+</button>
+          </form>
+        </div>
+        <!-- Total -->
+        <div class="hidden sm:block text-right font-semibold text-sm">${{ item.line_total }}</div>
+        <!-- Remove -->
+        <form action="{% url 'cart:remove' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="item_id" value="{{ item.pk }}" />
+          <button type="submit" aria-label="Remove" class="p-1 text-[var(--color-text-muted)] hover:text-red-500 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Summary -->
+    <div>
+      <div class="border border-[var(--color-border)] p-6 sticky top-24">
+        <h2 class="font-serif font-bold text-lg mb-5">Order Summary</h2>
+
+        <!-- Coupon -->
+        <form action="{% url 'cart:apply_coupon' %}" method="post" class="flex mb-5 gap-0">
+          {% csrf_token %}
+          <input type="text" name="coupon_code" placeholder="Discount code"
+                 class="input flex-1 py-2 text-sm" />
+          <button type="submit" class="btn-primary px-4 py-2 text-xs">Apply</button>
+        </form>
+
+        <div class="space-y-2 text-sm mb-4">
+          <div class="flex justify-between"><span class="text-[var(--color-text-muted)]">Subtotal</span><span class="font-medium">${{ cart.subtotal }}</span></div>
+          <div class="flex justify-between"><span class="text-[var(--color-text-muted)]">Shipping</span><span class="text-[var(--color-text-muted)]">Calculated at checkout</span></div>
+        </div>
+        <div class="flex justify-between font-bold text-base border-t border-[var(--color-border)] pt-4 mb-6">
+          <span>Total</span><span>${{ cart.subtotal }}</span>
+        </div>
+
+        <a href="{% url 'orders:checkout' %}" class="btn-primary w-full text-center block py-4">Proceed to Checkout</a>
+        <a href="{% url 'store:collection_list' %}" class="btn-ghost w-full text-center block mt-3 text-sm">← Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="text-center py-24">
+    <svg class="w-16 h-16 mx-auto text-[var(--color-border)] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
+    <h2 class="font-serif font-bold text-2xl mb-3">Your cart is empty</h2>
+    <p class="text-[var(--color-text-muted)] mb-8">Add some beautiful pieces to get started.</p>
+    <a href="{% url 'store:collection_list' %}" class="btn-primary">Shop Collections</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

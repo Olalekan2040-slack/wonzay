@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+{% load static store_tags %}
+
+{% block title %}Wonzays Kollections — Contemporary African Fashion | Australia{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Pull main under transparent header */
+#main-content { margin-top: -72px; }
+
+/* Marquee animation */
+@keyframes marquee-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-inner { display: flex; animation: marquee-move 30s linear infinite; white-space: nowrap; }
+.marquee-inner:hover { animation-play-state: paused; }
+
+/* Coll-card hover */
+.coll-card { position:relative; border-radius:18px; overflow:hidden; display:block; text-decoration:none; }
+.coll-card .cover { transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94); width:100%; height:100%; object-fit:cover; }
+.coll-card:hover .cover { transform: scale(1.06); }
+.coll-card .hover-line { transform: translateX(-100%); transition: transform 0.3s ease; }
+.coll-card:hover .hover-line { transform: translateX(0); }
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 0.875rem !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
+  .grid-coll { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
+  .story-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+  .hero-h1 { font-size: clamp(2rem, 9vw, 3rem) !important; }
+  .hide-sm { display: none !important; }
+}
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .story-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
+}
+@media (max-width: 1100px) {
+  .grid-coll { grid-template-columns: repeat(2, 1fr) !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section style="position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;background:#1A0A38;">
+
+  <!-- BG Image (hero slide or static fallback) -->
+  {% if hero_slides %}{% for slide in hero_slides %}{% if forloop.first %}
+  <img src="{{ slide.background_image.url }}" alt="{{ slide.headline }}"
+       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;" />
+  {% endif %}{% endfor %}
+  {% else %}
+  <img src="{% static 'images/female_ankara2.png' %}" alt="Wonzays Kollections"
+       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;" />
+  {% endif %}
+
+  <!-- Gradient overlay -->
+  <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(26,10,56,0.95) 0%,rgba(45,21,99,0.75) 45%,rgba(91,75,138,0.3) 100%);"></div>
+
+  <!-- Decorative glow orbs -->
+  <div style="position:absolute;top:15%;right:8%;width:280px;height:280px;background:rgba(91,75,138,0.18);border-radius:50%;filter:blur(70px);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:25%;right:25%;width:180px;height:180px;background:rgba(123,111,168,0.15);border-radius:50%;filter:blur(50px);pointer-events:none;"></div>
+
+  <!-- Content -->
+  <div style="position:relative;z-index:2;width:100%;padding:9rem 0 5rem;">
+    <div class="section">
+      <div style="max-width:680px;">
+
+        <!-- Live dot + eyebrow -->
+        <div class="reveal" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.09);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.18);border-radius:100px;padding:6px 18px 6px 10px;margin-bottom:2rem;">
+          <span style="width:8px;height:8px;background:#5B4B8A;border-radius:50%;animation:pulse-glow 2s ease infinite;flex-shrink:0;"></span>
+          <span style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.88);">New Collection &middot; Winter 2026</span>
+        </div>
+
+        <!-- Headline -->
+        {% if hero_slides %}{% for slide in hero_slides %}{% if forloop.first %}
+        <h1 class="hero-h1 reveal reveal-d1"
+            style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5.5vw,5rem);font-weight:800;color:#fff;line-height:1.08;letter-spacing:-0.03em;margin-bottom:1.5rem;">
+          {{ slide.headline }}
+        </h1>
+        {% if slide.sub_headline %}
+        <p class="reveal reveal-d2" style="font-size:clamp(1rem,1.8vw,1.2rem);color:rgba(255,255,255,0.72);line-height:1.75;max-width:500px;margin-bottom:2.5rem;">{{ slide.sub_headline }}</p>
+        {% endif %}
+        <div class="reveal reveal-d3" style="display:flex;flex-wrap:wrap;gap:1rem;">
+          <a href="{{ slide.cta1_url }}" class="btn btn-white btn-lg">{{ slide.cta1_label }}</a>
+          {% if slide.cta2_label %}<a href="{{ slide.cta2_url }}" class="btn btn-white-outline btn-lg">{{ slide.cta2_label }}</a>{% endif %}
+        </div>
+        {% endif %}{% endfor %}
+        {% else %}
+        <h1 class="hero-h1 reveal reveal-d1"
+            style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5.5vw,5rem);font-weight:800;color:#fff;line-height:1.08;letter-spacing:-0.03em;margin-bottom:1.5rem;">
+          Where African Style<br/>Meets Modern Elegance
+        </h1>
+        <p class="reveal reveal-d2" style="font-size:1.15rem;color:rgba(255,255,255,0.72);line-height:1.75;max-width:500px;margin-bottom:2.5rem;">
+          Contemporary African fashion, beautifully crafted.<br/>Shipped from Karalee, Queensland to the world.
+        </p>
+        <div class="reveal reveal-d3" style="display:flex;flex-wrap:wrap;gap:1rem;">
+          <a href="{% url 'store:collection_list' %}" class="btn btn-white btn-lg">Shop Collections</a>
+          <a href="{% url 'store:collection_detail' 'new-arrivals' %}" class="btn btn-white-outline btn-lg">New Arrivals</a>
+        </div>
+        {% endif %}
+
+        <!-- Stats -->
+        <div class="reveal reveal-d4" style="display:flex;flex-wrap:wrap;gap:2.5rem;margin-top:4rem;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,0.1);">
+          <div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:#fff;line-height:1;">500+</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;">Styles</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:#fff;line-height:1;">4.9★</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;">Rating</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:#fff;line-height:1;">10K+</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;">Customers</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(255,255,255,0.35);">
+    <span style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;">Scroll</span>
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     MARQUEE STRIP
+══════════════════════════════════════════════ -->
+<div style="background:#2D1563;overflow:hidden;padding:0.875rem 0;border-top:1px solid rgba(255,255,255,0.06);">
+  <div class="marquee-inner">
+    {% for item in "African Fashion · Ready to Wear · Made with Love · Ships from Australia · Free Returns · AfterPay Available · Dresses · Sets · Jumpsuits · African Fashion · Ready to Wear · Made with Love · Ships from Australia · Free Returns · AfterPay Available · Dresses · Sets · Jumpsuits · "|split:"·" %}
+    <span style="font-size:0.82rem;font-weight:600;letter-spacing:0.06em;color:rgba(255,255,255,0.65);padding:0 1.25rem;">{{ item|strip }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TRUST BADGES
+══════════════════════════════════════════════ -->
+<div style="background:#fff;border-bottom:1px solid #E0DBF0;">
+  <div class="section">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);" class="trust-badges">
+      <!-- Badge 1 -->
+      <div style="display:flex;align-items:center;gap:14px;padding:1.375rem 1rem;border-right:1px solid #E0DBF0;">
+        <div style="width:44px;height:44px;background:#EDE9F8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" fill="none" stroke="#5B4B8A" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        </div>
+        <div><div style="font-size:0.88rem;font-weight:700;color:#1A1A2E;">Free Shipping</div><div style="font-size:0.78rem;color:#6B6880;margin-top:2px;">On orders over $150</div></div>
+      </div>
+      <!-- Badge 2 -->
+      <div style="display:flex;align-items:center;gap:14px;padding:1.375rem 1rem;border-right:1px solid #E0DBF0;">
+        <div style="width:44px;height:44px;background:#EDE9F8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" fill="none" stroke="#5B4B8A" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <div><div style="font-size:0.88rem;font-weight:700;color:#1A1A2E;">Buy Now Pay Later</div><div style="font-size:0.78rem;color:#6B6880;margin-top:2px;">AfterPay &amp; Zip</div></div>
+      </div>
+      <!-- Badge 3 -->
+      <div style="display:flex;align-items:center;gap:14px;padding:1.375rem 1rem;border-right:1px solid #E0DBF0;">
+        <div style="width:44px;height:44px;background:#EDE9F8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" fill="none" stroke="#5B4B8A" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </div>
+        <div><div style="font-size:0.88rem;font-weight:700;color:#1A1A2E;">30-Day Returns</div><div style="font-size:0.78rem;color:#6B6880;margin-top:2px;">Hassle-free policy</div></div>
+      </div>
+      <!-- Badge 4 -->
+      <div style="display:flex;align-items:center;gap:14px;padding:1.375rem 1rem;">
+        <div style="width:44px;height:44px;background:#EDE9F8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" fill="none" stroke="#5B4B8A" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div><div style="font-size:0.88rem;font-weight:700;color:#1A1A2E;">Secure Checkout</div><div style="font-size:0.78rem;color:#6B6880;margin-top:2px;">256-bit SSL encryption</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>@media(max-width:768px){.trust-badges{grid-template-columns:repeat(2,1fr)!important}}</style>
+
+
+<!-- ══════════════════════════════════════════════
+     COLLECTIONS GRID
+══════════════════════════════════════════════ -->
+<section style="background:#F5F3FC;padding:5.5rem 0;">
+  <div class="section">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;" class="reveal">
+      <div>
+        <div class="eyebrow">Explore</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.75rem);font-weight:700;color:#1A1A2E;margin:0;">Shop by Collection</h2>
+      </div>
+      <a href="{% url 'store:collection_list' %}"
+         style="font-size:0.875rem;font-weight:600;color:#5B4B8A;display:flex;align-items:center;gap:5px;border-bottom:2px solid #5B4B8A;padding-bottom:2px;white-space:nowrap;"
+         onmouseover="this.style.color='#3E2078'" onmouseout="this.style.color='#5B4B8A'">
+        View All <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="grid-coll" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.125rem;">
+      {% if collections %}
+        {% for collection in collections|slice:":8" %}
+        <a href="{{ collection.get_absolute_url }}" class="coll-card reveal reveal-d{{ forloop.counter }}"
+           style="aspect-ratio:3/4;background:{% if forloop.counter == 1 %}#1A0A38{% elif forloop.counter == 2 %}#2D1563{% elif forloop.counter == 3 %}#3E2078{% else %}#5B4B8A{% endif %};">
+          {% if collection.cover_image %}
+          <img class="cover" src="{{ collection.cover_image.url }}" alt="{{ collection.name }}" loading="lazy"
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.65;" />
+          {% else %}
+          <img class="cover" src="{% static 'images/female_ankara.png' %}" alt="{{ collection.name }}" loading="lazy"
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.35;" />
+          {% endif %}
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,0.72) 100%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1.375rem;">
+            <p style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;margin:0;">{{ collection.name }}</p>
+            <p style="font-size:0.78rem;color:rgba(255,255,255,0.6);margin:3px 0 0;font-weight:500;">{{ collection.products.count }} items</p>
+            <div class="hover-line" style="height:2px;background:#fff;width:100%;margin-top:0.625rem;opacity:0.5;border-radius:2px;"></div>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <!-- Fallback hardcoded collection cards -->
+        <a href="{% url 'store:collection_detail' 'dresses' %}" class="coll-card reveal reveal-d1" style="aspect-ratio:3/4;background:#1A0A38;">
+          <img class="cover" src="{% static 'images/female_ankara_dress.png' %}" alt="Dresses" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.65;" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,0.72) 100%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1.375rem;"><p style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;margin:0;">Dresses</p></div>
+        </a>
+        <a href="{% url 'store:collection_detail' 'sets' %}" class="coll-card reveal reveal-d2" style="aspect-ratio:3/4;background:#2D1563;">
+          <img class="cover" src="{% static 'images/female_ankara.png' %}" alt="Co-ord Sets" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.65;" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,0.72) 100%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1.375rem;"><p style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;margin:0;">Co-ord Sets</p></div>
+        </a>
+        <a href="{% url 'store:collection_detail' 'jumpsuits' %}" class="coll-card reveal reveal-d3" style="aspect-ratio:3/4;background:#3E2078;">
+          <img class="cover" src="{% static 'images/female_ankara2.png' %}" alt="Jumpsuits" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.65;" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,0.72) 100%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1.375rem;"><p style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;margin:0;">Jumpsuits</p></div>
+        </a>
+        <a href="{% url 'store:collection_detail' 'men' %}" class="coll-card reveal reveal-d4" style="aspect-ratio:3/4;background:#5B4B8A;">
+          <img class="cover" src="{% static 'images/Male_ankara_jacket.png' %}" alt="Men" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.65;" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,0.72) 100%);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:1.375rem;"><p style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;margin:0;">Men</p></div>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     NEW ARRIVALS
+══════════════════════════════════════════════ -->
+<section style="background:#fff;padding:5.5rem 0;">
+  <div class="section">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;" class="reveal">
+      <div>
+        <div class="eyebrow">Just Dropped</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.75rem);font-weight:700;color:#1A1A2E;margin:0;">New Arrivals</h2>
+      </div>
+      <a href="{% url 'store:collection_detail' 'new-arrivals' %}"
+         style="font-size:0.875rem;font-weight:600;color:#5B4B8A;display:flex;align-items:center;gap:5px;border-bottom:2px solid #5B4B8A;padding-bottom:2px;white-space:nowrap;"
+         onmouseover="this.style.color='#3E2078'" onmouseout="this.style.color='#5B4B8A'">
+        View All <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    {% with products=new_arrivals %}
+    {% if products %}
+    <div class="grid-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
+      {% for product in products|slice:":8" %}
+      <div class="reveal reveal-d{{ forloop.counter|slice:':1' }}">
+        {% include "components/product_card.html" with product=product %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- Fallback: show placeholder cards with static images -->
+    <div class="grid-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
+      {% for img in "female_ankara_dress.png,female_ankara.png,female_mini_ankara.png,fullgown_female_ankara.png"|split:"," %}
+      <div class="pcard reveal reveal-d{{ forloop.counter }}">
+        <div class="pcard__media">
+          <img class="pcard__img" src="{% static 'images/' %}{{ img }}" alt="Product" loading="lazy" />
+          <div class="pcard__overlay"><button class="pcard__add-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Quick Add</button></div>
+          <div style="position:absolute;top:0.75rem;left:0.75rem;"><span class="badge badge-new">New In</span></div>
+        </div>
+        <div class="pcard__info">
+          <p class="pcard__name">Ankara Fashion Piece</p>
+          <div class="pcard__price"><span>$89.00</span></div>
+          <div class="pcard__stars">★★★★★</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     BRAND STORY / FEATURE BANNER
+══════════════════════════════════════════════ -->
+<section style="background:#F5F3FC;padding:5.5rem 0;overflow:hidden;">
+  <div class="section">
+    <div class="story-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;">
+
+      <!-- Image side -->
+      <div class="reveal" style="position:relative;">
+        <div style="border-radius:24px;overflow:hidden;aspect-ratio:4/5;">
+          {% if brand_story and brand_story.image %}
+          <img src="{{ brand_story.image.url }}" alt="{{ brand_story.heading }}"
+               style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+          {% else %}
+          <img src="{% static 'images/female_ankara2.png' %}" alt="Wonzays Kollections"
+               style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+          {% endif %}
+        </div>
+        <!-- Floating accent card -->
+        <div style="position:absolute;bottom:-2rem;right:-2rem;background:#2D1563;color:#fff;border-radius:16px;padding:1.5rem 1.75rem;text-align:center;box-shadow:0 16px 48px rgba(45,21,99,0.3);" class="hide-sm">
+          <p style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:800;margin:0;line-height:1;">8+</p>
+          <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin:5px 0 0;">Collections</p>
+        </div>
+      </div>
+
+      <!-- Text side -->
+      <div class="reveal reveal-d2">
+        <div class="eyebrow">Our Story</div>
+        {% if brand_story %}
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,3vw,2.75rem);font-weight:700;color:#1A1A2E;line-height:1.2;margin-bottom:1.5rem;">{{ brand_story.heading }}</h2>
+        <div style="color:#6B6880;font-size:0.9875rem;line-height:1.85;margin-bottom:2rem;">{{ brand_story.body|linebreaks }}</div>
+        <a href="{{ brand_story.cta_url }}" class="btn btn-primary">{{ brand_story.cta_label }}</a>
+        {% else %}
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,3vw,2.75rem);font-weight:700;color:#1A1A2E;line-height:1.2;margin-bottom:1.5rem;">Fashion Born from African Culture</h2>
+        <p style="color:#6B6880;font-size:0.9875rem;line-height:1.85;margin-bottom:1.5rem;">Wonzays Kollections was born from a deep love of African textile art and contemporary fashion. Each piece celebrates vibrant Ankara prints and modern silhouettes, handcrafted with care.</p>
+        <p style="color:#6B6880;font-size:0.9875rem;line-height:1.85;margin-bottom:2rem;">Based in Karalee, Ipswich QLD — we ship to customers across Australia and internationally, bringing the beauty of African fashion to the world.</p>
+        <a href="{% url 'pages:static_page' 'about' %}" class="btn btn-primary">Read Our Story</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     BEST SELLERS
+══════════════════════════════════════════════ -->
+<section style="background:#fff;padding:5.5rem 0;">
+  <div class="section">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;" class="reveal">
+      <div>
+        <div class="eyebrow">Customer Favourites</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.75rem);font-weight:700;color:#1A1A2E;margin:0;">Best Sellers</h2>
+      </div>
+      <a href="{% url 'store:collection_list' %}"
+         style="font-size:0.875rem;font-weight:600;color:#5B4B8A;display:flex;align-items:center;gap:5px;border-bottom:2px solid #5B4B8A;padding-bottom:2px;white-space:nowrap;"
+         onmouseover="this.style.color='#3E2078'" onmouseout="this.style.color='#5B4B8A'">
+        View All <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    {% if best_sellers %}
+    <div class="grid-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
+      {% for product in best_sellers|slice:":8" %}
+      <div class="reveal reveal-d{{ forloop.counter|slice:':1' }}">
+        {% include "components/product_card.html" with product=product %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="grid-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
+      {% for img in "african_accessories.png,bag1.png,Ankara_themed_jewelries.png,bag2.png"|split:"," %}
+      <div class="pcard reveal reveal-d{{ forloop.counter }}">
+        <div class="pcard__media">
+          <img class="pcard__img" src="{% static 'images/' %}{{ img }}" alt="Best Seller" loading="lazy" />
+          <div class="pcard__overlay"><button class="pcard__add-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Quick Add</button></div>
+        </div>
+        <div class="pcard__info">
+          <p class="pcard__name">Ankara Accessories</p>
+          <div class="pcard__price"><span>$65.00</span></div>
+          <div class="pcard__stars">★★★★★</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════ -->
+<section style="background:linear-gradient(135deg,#1A0A38 0%,#2D1563 60%,#3E2078 100%);padding:5.5rem 0;">
+  <div class="section">
+    <div style="text-align:center;margin-bottom:3.5rem;" class="reveal">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#A193C8;margin-bottom:1rem;">
+        <span style="color:#F59E0B;">★★★★★</span>&nbsp; 4.9 / 5 from 200+ reviews
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.75rem);font-weight:700;color:#fff;margin:0;">What Our Customers Say</h2>
+    </div>
+
+    <div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+      {% if featured_reviews %}
+        {% for review in featured_reviews %}
+        <div class="reveal reveal-d{{ forloop.counter }}"
+             style="background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2rem;">
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:1rem;letter-spacing:3px;">★★★★★</div>
+          <p style="color:rgba(255,255,255,0.82);font-size:0.9375rem;line-height:1.78;margin-bottom:1.5rem;font-style:italic;">"{{ review.body|truncatewords:28 }}"</p>
+          <div style="display:flex;align-items:center;gap:12px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5B4B8A,#2D1563);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0;">
+              {{ review.author.first_name|slice:":1"|upper }}
+            </div>
+            <div>
+              <p style="font-size:0.9rem;font-weight:600;color:#fff;margin:0;">{{ review.author.get_full_name|default:review.author.email }}</p>
+              <p style="font-size:0.75rem;color:#A193C8;margin:2px 0 0;">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Hardcoded fallback testimonials -->
+        <!-- Hardcoded fallback testimonials (always visible) -->
+        <div class="reveal reveal-d1" style="background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2rem;">
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:1rem;letter-spacing:3px;">★★★★★</div>
+          <p style="color:rgba(255,255,255,0.82);font-size:0.9375rem;line-height:1.78;margin-bottom:1.5rem;font-style:italic;">"Absolutely love my Ankara dress! The quality is stunning and it fits perfectly. Will definitely be ordering more."</p>
+          <div style="display:flex;align-items:center;gap:12px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5B4B8A,#2D1563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0;">A</div>
+            <div><p style="font-size:0.9rem;font-weight:600;color:#fff;margin:0;">Amara T.</p><p style="font-size:0.75rem;color:#A193C8;margin:2px 0 0;">Verified Buyer · Sydney NSW</p></div>
+          </div>
+        </div>
+        <div class="reveal reveal-d2" style="background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2rem;">
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:1rem;letter-spacing:3px;">★★★★★</div>
+          <p style="color:rgba(255,255,255,0.82);font-size:0.9375rem;line-height:1.78;margin-bottom:1.5rem;font-style:italic;">"The co-ord set I ordered exceeded all expectations. Fast shipping and beautiful packaging too!"</p>
+          <div style="display:flex;align-items:center;gap:12px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5B4B8A,#2D1563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0;">F</div>
+            <div><p style="font-size:0.9rem;font-weight:600;color:#fff;margin:0;">Fatima O.</p><p style="font-size:0.75rem;color:#A193C8;margin:2px 0 0;">Verified Buyer · Melbourne VIC</p></div>
+          </div>
+        </div>
+        <div class="reveal reveal-d3" style="background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2rem;">
+          <div style="color:#F59E0B;font-size:1rem;margin-bottom:1rem;letter-spacing:3px;">★★★★★</div>
+          <p style="color:rgba(255,255,255,0.82);font-size:0.9375rem;line-height:1.78;margin-bottom:1.5rem;font-style:italic;">"Such gorgeous pieces. I wore my jumpsuit to a wedding and got so many compliments. Thank you Wonzays!"</p>
+          <div style="display:flex;align-items:center;gap:12px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5B4B8A,#2D1563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:1rem;flex-shrink:0;">G</div>
+            <div><p style="font-size:0.9rem;font-weight:600;color:#fff;margin:0;">Grace A.</p><p style="font-size:0.75rem;color:#A193C8;margin:2px 0 0;">Verified Buyer · Brisbane QLD</p></div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     NEWSLETTER
+══════════════════════════════════════════════ -->
+<section style="background:#5B4B8A;padding:5rem 0;">
+  <div class="section" style="text-align:center;max-width:620px;margin:0 auto;padding:0 1.5rem;">
+    <div class="reveal">
+      <div style="width:60px;height:60px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <p style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:1rem;">Join the Family</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:700;color:#fff;margin-bottom:1rem;">Get 10% Off Your First Order</h2>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.68);line-height:1.75;margin-bottom:2.5rem;">Subscribe for exclusive deals, new arrivals and style inspiration. No spam, ever.</p>
+      <form action="{% url 'newsletter:subscribe' %}" method="post"
+            style="display:flex;gap:0.75rem;max-width:460px;margin:0 auto;" id="newsletter-form">
+        {% csrf_token %}
+        <input type="hidden" name="source" value="homepage" />
+        <input type="email" name="email" required placeholder="Your email address"
+               style="flex:1;min-width:0;padding:1rem 1.25rem;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.22);border-radius:12px;font-size:0.9375rem;color:#fff;outline:none;transition:border-color 0.2s;"
+               onfocus="this.style.borderColor='rgba(255,255,255,0.65)'"
+               onblur="this.style.borderColor='rgba(255,255,255,0.22)'" />
+        <button type="submit" class="btn btn-white" style="flex-shrink:0;">Subscribe</button>
+      </form>
+      <p style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:1.25rem;">Unsubscribe any time. We respect your privacy.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     PAYMENT STRIP
+══════════════════════════════════════════════ -->
+<div style="background:#fff;border-top:1px solid #E0DBF0;padding:1.25rem 0;">
+  <div class="section" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1.25rem;">
+    <span style="font-size:0.78rem;color:#A7A3C0;font-weight:500;">Accepted payments:</span>
+    {% for label in "Visa|Mastercard|PayPal|AfterPay|Apple Pay|Zip"|split:"|" %}
+    <span style="font-size:0.75rem;font-weight:700;color:#5B4B8A;background:#F5F3FC;border:1px solid #E0DBF0;padding:5px 14px;border-radius:100px;">{{ label }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

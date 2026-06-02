@@ -1,0 +1,31 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Collections{% endblock %}
+{% block page_title %}Collections{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <p class="text-sm text-gray-500">{{ collections|length }} collections</p>
+  <a href="{% url 'dashboard:collection_add' %}" class="btn-primary text-sm px-5 py-2.5">+ Add Collection</a>
+</div>
+<div class="bg-white border border-gray-200 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead><tr class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+      <th class="px-5 py-3">Name</th><th class="px-5 py-3">Slug</th><th class="px-5 py-3">Active</th><th class="px-5 py-3">Actions</th>
+    </tr></thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for c in collections %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-5 py-3 font-medium">{{ c.name }}</td>
+        <td class="px-5 py-3 font-mono text-xs text-gray-400">{{ c.slug }}</td>
+        <td class="px-5 py-3">{% if c.is_active %}✓{% else %}—{% endif %}</td>
+        <td class="px-5 py-3">
+          <a href="{% url 'dashboard:collection_edit' c.pk %}" class="text-blue-600 hover:underline text-xs mr-3">Edit</a>
+          <a href="{{ c.get_absolute_url }}" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs">View</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="px-5 py-10 text-center text-gray-400">No collections yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

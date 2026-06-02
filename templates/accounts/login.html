@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sign In — Wonzays Kollections{% endblock %}
+{% block content %}
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F7F5FF;padding:6rem 1.5rem 3rem;">
+  <div style="width:100%;max-width:440px;">
+    <div style="background:white;border-radius:24px;padding:2.5rem;box-shadow:0 4px 40px rgba(31,10,60,0.08);">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <a href="{% url 'store:home' %}" style="display:inline-flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;">
+          <div style="width:52px;height:52px;background:linear-gradient(135deg,#3D2F5C,#5B4B8A);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:white;font-family:'Playfair Display',serif;font-weight:800;font-size:24px;">W</span>
+          </div>
+          <span style="font-size:0.75rem;color:#A7A7B8;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;">Wonzays Kollections</span>
+        </a>
+      </div>
+
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:#1F1F23;text-align:center;margin:0 0 0.5rem;">Welcome back</h1>
+      <p style="font-size:0.9rem;color:#6B6B7C;text-align:center;margin:0 0 2rem;">Sign in to continue shopping</p>
+
+      {% if form.errors %}
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;margin-bottom:1.5rem;">
+        <p style="font-size:0.875rem;color:#DC2626;margin:0;">Incorrect email or password. Please try again.</p>
+      </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'accounts:login' %}" style="display:flex;flex-direction:column;gap:1.25rem;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}" />
+
+        <div>
+          <label style="display:block;font-size:0.875rem;font-weight:600;color:#1F1F23;margin-bottom:6px;">Email</label>
+          <input type="email" name="email" required placeholder="you@example.com" value="{{ form.username.value|default:'' }}"
+                 style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
+                 onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
+                 onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:0.875rem;font-weight:600;color:#1F1F23;">Password</label>
+            <a href="{% url 'accounts:password_reset' %}" style="font-size:0.8rem;color:#5B4B8A;font-weight:500;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Forgot password?</a>
+          </div>
+          <input type="password" name="password" required placeholder="••••••••"
+                 style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
+                 onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
+                 onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
+        </div>
+
+        <button type="submit" style="width:100%;padding:14px;background:#3D2F5C;color:white;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:4px;"
+                onmouseover="this.style.background='#5B4B8A';this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.background='#3D2F5C';this.style.transform='translateY(0)'">Sign In</button>
+      </form>
+
+      <div style="text-align:center;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #E8E4F5;">
+        <p style="font-size:0.9rem;color:#6B6B7C;">Don't have an account? <a href="{% url 'accounts:register' %}" style="color:#5B4B8A;font-weight:600;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Create one</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page.meta_title|default:page.title }} — Wonzays Kollections{% endblock %}
+{% block meta_description %}{{ page.meta_description|default:page.title }}{% endblock %}
+
+{% block content %}
+<div class="section py-12 max-w-3xl mx-auto">
+  <nav class="text-xs text-[var(--color-text-muted)] mb-6 flex items-center gap-2">
+    <a href="{% url 'store:home' %}" class="hover:text-[var(--color-primary)] transition">Home</a>
+    <span>/</span>
+    <span class="text-[var(--color-text)] font-medium">{{ page.title }}</span>
+  </nav>
+  <h1 class="font-serif font-bold text-3xl lg:text-4xl mb-8">{{ page.title }}</h1>
+  <div class="prose prose-lg max-w-none text-[var(--color-text)] leading-relaxed">
+    {{ page.body|linebreaks }}
+  </div>
+</div>
+{% endblock %}

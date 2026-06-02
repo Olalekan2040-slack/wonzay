@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Payment — Wonzays Kollections{% endblock %}
+{% block extra_head %}<script src="https://js.stripe.com/v3/"></script>{% endblock %}
+
+{% block content %}
+<div class="section py-10 max-w-2xl mx-auto">
+  <h1 class="font-serif font-bold text-3xl mb-2">Payment</h1>
+  <p class="text-[var(--color-text-muted)] mb-8">All transactions are encrypted and secure.</p>
+
+  {% if order %}
+  <div class="border border-[var(--color-border)] p-6 mb-6 bg-[var(--color-surface)]">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-semibold text-sm">Order Total</h2>
+      <span class="font-bold text-xl">${{ order.total }}</span>
+    </div>
+    <p class="text-xs text-[var(--color-text-muted)]">Order #{{ order.order_number|slice:":8"|upper }}</p>
+  </div>
+
+  <!-- Payment method tabs -->
+  <div x-data="{ method: 'card' }">
+    <div class="flex border border-[var(--color-border)] mb-6">
+      <button @click="method = 'card'" :class="method === 'card' ? 'bg-[var(--color-primary)] text-white' : 'hover:bg-[var(--color-surface)]'"
+              class="flex-1 py-3 text-sm font-semibold transition">Credit / Debit Card</button>
+      <button @click="method = 'afterpay'" :class="method === 'afterpay' ? 'bg-[var(--color-primary)] text-white' : 'hover:bg-[var(--color-surface)]'"
+              class="flex-1 py-3 text-sm font-semibold transition border-x border-[var(--color-border)]">AfterPay</button>
+      <button @click="method = 'paypal'" :class="method === 'paypal' ? 'bg-[var(--color-primary)] text-white' : 'hover:bg-[var(--color-surface)]'"
+              class="flex-1 py-3 text-sm font-semibold transition">PayPal</button>
+    </div>
+
+    <!-- Card form -->
+    <div x-show="method === 'card'" class="border border-[var(--color-border)] p-6">
+      <div id="stripe-card-element" class="border border-[var(--color-border)] p-3 mb-4 bg-white"></div>
+      <div id="stripe-errors" class="text-sm text-red-600 mb-4"></div>
+      <button id="stripe-pay-btn" class="btn-primary w-full py-4">Pay ${{ order.total }}</button>
+    </div>
+
+    <!-- AfterPay -->
+    <div x-show="method === 'afterpay'" class="border border-[var(--color-border)] p-6 text-center" style="display:none;">
+      <p class="font-semibold mb-2">Pay in 4 interest-free instalments</p>
+      <p class="text-sm text-[var(--color-text-muted)] mb-4">4 × ${{ order.total|floatformat:2|divisibleby:4 }} every 2 weeks</p>
+      <button class="btn-primary w-full py-4">Continue with AfterPay</button>
+    </div>
+
+    <!-- PayPal -->
+    <div x-show="method === 'paypal'" class="border border-[var(--color-border)] p-6" style="display:none;">
+      <div id="paypal-button-container" class="mb-4"></div>
+      <p class="text-xs text-center text-[var(--color-text-muted)]">You will be redirected to PayPal to complete payment.</p>
+    </div>
+  </div>
+
+  <p class="mt-6 text-xs text-center text-[var(--color-text-muted)] flex items-center justify-center gap-1">
+    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+    Secured by Stripe · 256-bit SSL encryption
+  </p>
+  {% else %}
+  <p class="text-[var(--color-text-muted)]">No order found. <a href="{% url 'cart:detail' %}" class="text-[var(--color-primary)] hover:underline">Return to cart</a>.</p>
+  {% endif %}
+</div>
+
+{% if stripe_public_key and order %}
+{% block extra_scripts %}
+<script>
+const stripe = Stripe('{{ stripe_public_key }}');
+const elements = stripe.elements();
+const cardElement = elements.create('card', { style: { base: { fontSize: '16px', color: '#1a1a2e' } } });
+cardElement.mount('#stripe-card-element');
+cardElement.on('change', e => {
+  document.getElementById('stripe-errors').textContent = e.error ? e.error.message : '';
+});
+document.getElementById('stripe-pay-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('stripe-pay-btn');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  const resp = await fetch('/checkout/create-payment-intent/', {
+    method: 'POST',
+    headers: {'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '', 'Content-Type': 'application/json'},
+    body: JSON.stringify({ order_id: '{{ order.pk }}' })
+  });
+  const data = await resp.json();
+  const { error } = await stripe.confirmCardPayment(data.client_secret, { payment_method: { card: cardElement } });
+  if (error) {
+    document.getElementById('stripe-errors').textContent = error.message;
+    btn.disabled = false; btn.textContent = 'Pay ${{ order.total }}';
+  } else {
+    window.location.href = '{% url "orders:success" order.pk %}';
+  }
+});
+</script>
+{% endblock %}
+{% endif %}
+{% endblock %}

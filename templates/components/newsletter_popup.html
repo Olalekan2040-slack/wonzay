@@ -1,0 +1,76 @@
+{% load static %}
+<div id="newsletter-popup"
+     style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(26,10,56,0.65);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="background:#fff;border-radius:24px;overflow:hidden;width:100%;max-width:560px;position:relative;animation:slideUp 0.3s ease;"
+       onclick="event.stopPropagation()">
+
+    <!-- Close -->
+    <button data-popup-close aria-label="Close"
+            style="position:absolute;top:1rem;right:1rem;z-index:10;width:32px;height:32px;background:#F5F3FC;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6B6880;transition:background 0.2s;"
+            onmouseover="this.style.background='#E0DBF0'" onmouseout="this.style.background='#F5F3FC'">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div style="display:grid;grid-template-columns:1fr 1.3fr;">
+
+      <!-- Left accent panel -->
+      <div style="background:linear-gradient(160deg,#1A0A38 0%,#3E2078 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;position:relative;overflow:hidden;">
+        <!-- Decorative orb -->
+        <div style="position:absolute;top:-40px;left:-40px;width:120px;height:120px;background:rgba(91,75,138,0.3);border-radius:50%;filter:blur(30px);"></div>
+        <div style="position:relative;">
+          <div style="font-family:'Playfair Display',serif;font-size:4rem;font-weight:800;color:#fff;line-height:1;">10%</div>
+          <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:0.5rem;">Off Your First Order</div>
+          <div style="width:36px;height:2px;background:rgba(255,255,255,0.2);margin:1.5rem auto;border-radius:2px;"></div>
+          <img src="{% static 'images/female_ankara.png' %}" alt="Fashion"
+               style="width:100%;max-width:140px;border-radius:12px;opacity:0.75;margin:0 auto;" loading="lazy" />
+        </div>
+      </div>
+
+      <!-- Right form panel -->
+      <div style="padding:2.5rem 2rem;">
+        <span style="display:inline-block;background:#EDE9F8;color:#5B4B8A;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:100px;margin-bottom:1.25rem;">Exclusive Offer</span>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#1A1A2E;line-height:1.25;margin:0 0 0.75rem;">Join the Wonzays Family</h2>
+        <p style="font-size:0.875rem;color:#6B6880;line-height:1.65;margin:0 0 1.75rem;">
+          Sign up and get <strong style="color:#5B4B8A;">10% off</strong> your first order, plus early access to new arrivals.
+        </p>
+
+        <div data-popup-form>
+          <form action="{% url 'newsletter:subscribe' %}" method="post" style="display:flex;flex-direction:column;gap:0.75rem;">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="popup" />
+            <input type="text" name="first_name" placeholder="First name"
+                   style="padding:0.875rem 1rem;border:1.5px solid #E0DBF0;border-radius:10px;font-size:0.9rem;color:#1A1A2E;outline:none;transition:border-color 0.2s;"
+                   onfocus="this.style.borderColor='#5B4B8A'" onblur="this.style.borderColor='#E0DBF0'" />
+            <input type="email" name="email" required placeholder="Email address"
+                   style="padding:0.875rem 1rem;border:1.5px solid #E0DBF0;border-radius:10px;font-size:0.9rem;color:#1A1A2E;outline:none;transition:border-color 0.2s;"
+                   onfocus="this.style.borderColor='#5B4B8A'" onblur="this.style.borderColor='#E0DBF0'" />
+            <button type="submit"
+                    style="padding:0.9375rem;background:#2D1563;color:#fff;border:none;border-radius:10px;font-size:0.875rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;transition:background 0.2s;margin-top:0.25rem;"
+                    onmouseover="this.style.background='#5B4B8A'" onmouseout="this.style.background='#2D1563'">
+              Claim My 10% Off
+            </button>
+          </form>
+        </div>
+
+        <div data-popup-success style="display:none;text-align:center;padding:1.5rem 0;">
+          <div style="width:52px;height:52px;background:#EDE9F8;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.875rem;">
+            <svg width="22" height="22" fill="none" stroke="#5B4B8A" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <p style="font-size:0.9375rem;font-weight:700;color:#1A1A2E;margin:0 0 4px;">You're in!</p>
+          <p style="font-size:0.85rem;color:#6B6880;margin:0;">Check your inbox for your discount code.</p>
+        </div>
+
+        <button data-popup-close
+                style="display:block;width:100%;text-align:center;font-size:0.8rem;color:#A7A3C0;background:none;border:none;cursor:pointer;margin-top:1rem;padding:0;transition:color 0.2s;"
+                onmouseover="this.style.color='#1A1A2E'" onmouseout="this.style.color='#A7A3C0'">
+          No thanks, I'll pay full price
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
