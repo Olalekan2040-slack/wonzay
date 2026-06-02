@@ -6,14 +6,11 @@
 
       <!-- Brand -->
       <div>
-        <a href="{% url 'store:home' %}" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:1.25rem;">
-          <div style="width:38px;height:38px;background:linear-gradient(135deg,#5B4B8A,#3E2078);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <span style="color:#fff;font-family:'Playfair Display',serif;font-weight:800;font-size:17px;">W</span>
-          </div>
-          <div>
-            <span style="font-family:'Playfair Display',serif;font-size:1.0625rem;font-weight:700;color:#fff;display:block;line-height:1.1;">Wonzays</span>
-            <span style="font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);display:block;">Kollections</span>
-          </div>
+        <a href="{% url 'store:home' %}" style="display:inline-block;text-decoration:none;margin-bottom:1.25rem;" aria-label="Wonzays Kollections home">
+          <img src="{% static 'images/wonzays_website_logo_primary.png' %}"
+               alt="Wonzays Kollections"
+               style="height:48px;width:auto;filter:brightness(0) invert(1);"
+               loading="lazy" />
         </a>
         <p style="font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.78;margin-bottom:1.75rem;max-width:280px;">
           Contemporary African fashion for the modern woman. Based in Karalee, Ipswich QLD, Australia. Shipping worldwide.

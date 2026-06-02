@@ -14,20 +14,18 @@
     <div style="display:flex;align-items:center;justify-content:space-between;height:72px;">
 
       <!-- Logo -->
-      <a href="{% url 'store:home' %}" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;flex-shrink:0;">
-        <div style="width:36px;height:36px;background:linear-gradient(135deg,#5B4B8A,#3D2F5C);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-          <span style="color:white;font-family:'Playfair Display',serif;font-weight:800;font-size:16px;">W</span>
-        </div>
-        <div style="line-height:1.1;">
-          <span :style="scrolled ? 'color:#1F1F23' : 'color:white'"
-                style="font-family:'Playfair Display',serif;font-weight:700;font-size:17px;letter-spacing:-0.02em;display:block;transition:color 0.3s;">
-            Wonzays
-          </span>
-          <span :style="scrolled ? 'color:#5B4B8A' : 'color:rgba(255,255,255,0.75)'"
-                style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;display:block;transition:color 0.3s;">
-            Kollections
-          </span>
-        </div>
+      <a href="{% url 'store:home' %}" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;" aria-label="Wonzays Kollections home">
+        <!-- White version shown on dark/transparent hero, coloured version when scrolled -->
+        <img src="{% static 'images/wonzays_website_logo_primary.png' %}"
+             alt="Wonzays Kollections"
+             x-show="scrolled"
+             style="height:44px;width:auto;display:none;transition:opacity 0.3s;"
+             loading="eager" />
+        <img src="{% static 'images/wonzays_website_logo_primary.png' %}"
+             alt="Wonzays Kollections"
+             x-show="!scrolled"
+             style="height:44px;width:auto;filter:brightness(0) invert(1);transition:opacity 0.3s;"
+             loading="eager" />
       </a>
 
       <!-- Desktop nav -->
