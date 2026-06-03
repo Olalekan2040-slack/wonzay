@@ -5,6 +5,17 @@ env = environ.Env()
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+# ALLOWED_HOSTS: always include the Render subdomain automatically,
+# plus whatever is set in the ALLOWED_HOSTS env var (e.g. custom domain).
+import os
+_render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")  # set by Render automatically
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+if _render_hostname and _render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_render_hostname)
+
+# CSRF must also trust the Render domain
+CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h]
+
 # Render terminates SSL at the load balancer — trust X-Forwarded-Proto
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = True
