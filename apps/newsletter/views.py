@@ -19,6 +19,12 @@ class SubscribeView(View):
         if not created and not subscriber.is_active:
             subscriber.is_active = True
             subscriber.save()
+
+        # Send newsletter welcome email on new subscription or reactivation
+        if created or (not created and subscriber.is_active):
+            from apps.utils.emails import send_newsletter_welcome
+            send_newsletter_welcome(email, first_name)
+
         if settings.MAILCHIMP_WEBHOOK_URL:
             try:
                 requests.post(settings.MAILCHIMP_WEBHOOK_URL, json={"email": email}, timeout=3)

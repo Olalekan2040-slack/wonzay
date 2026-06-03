@@ -68,6 +68,10 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
                 line_total=item.line_total,
             )
 
+        # Send order confirmation email
+        from apps.utils.emails import send_order_confirmation
+        send_order_confirmation(order)
+
         request.session["pending_order_id"] = order.id
         return redirect("orders:payment")
 

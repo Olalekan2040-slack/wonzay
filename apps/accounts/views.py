@@ -33,6 +33,9 @@ class RegisterView(View):
         login(request, user)
         from apps.cart.utils import merge_session_cart_into_user_cart
         merge_session_cart_into_user_cart(request)
+        # Send welcome email
+        from apps.utils.emails import send_welcome_email
+        send_welcome_email(user)
         return redirect("accounts:profile")
 
 
@@ -109,6 +112,9 @@ class ProfileView(LoginRequiredMixin, View):
                 # requires a specific backend when multiple are configured).
                 from django.contrib.auth import update_session_auth_hash
                 update_session_auth_hash(request, request.user)
+                # Send password changed confirmation email
+                from apps.utils.emails import send_password_changed_email
+                send_password_changed_email(request.user)
                 from django.contrib import messages as msg
                 msg.success(request, "Password changed successfully.")
             elif not request.user.check_password(old_pw):
