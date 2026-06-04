@@ -2,7 +2,7 @@
 <div id="announcement-bar"
      x-data="{ current: 0, items: {{ announcement_bars|length|default:'1' }} }"
      x-effect="$watch('current', () => document.querySelectorAll('[data-announcement]').forEach((el, i) => el.style.display = i === current ? 'block' : 'none'))"
-     style="background: linear-gradient(135deg, #3D2F5C 0%, #5B4B8A 100%); border-bottom: 1px solid rgba(91,75,138,0.2);">
+     style="position:relative;z-index:100;background:linear-gradient(135deg,#3D2F5C 0%,#5B4B8A 100%);border-bottom:1px solid rgba(91,75,138,0.2);">
 
   <div style="display:flex;align-items:center;justify-content:center;padding:1rem;min-height:48px;position:relative;">
 

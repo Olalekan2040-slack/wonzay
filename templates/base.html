@@ -36,11 +36,12 @@
   <!-- Skip link for accessibility -->
   <a href="#main-content" style="position:absolute;left:-9999px;z-index:1;">Skip to main content</a>
 
-  <!-- Announcement bar -->
-  {% include "components/announcement_bar.html" %}
-
-  <!-- Header -->
+  <!-- Header (fixed, z-index 9000) -->
   {% include "components/header.html" %}
+
+  <!-- Announcement bar — sits below the navbar in normal document flow.
+       Lower z-index means it scrolls under the fixed header cleanly. -->
+  {% include "components/announcement_bar.html" %}
 
   <!-- Messages toast -->
   {% if messages %}
