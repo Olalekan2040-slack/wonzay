@@ -72,6 +72,7 @@ class Order(models.Model):
     stripe_payment_intent = models.CharField(max_length=200, blank=True)
     paypal_order_id = models.CharField(max_length=200, blank=True)
     tracking_number = models.CharField(max_length=200, blank=True)
+    tracking_carrier = models.CharField(max_length=100, blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,0 +1,79 @@
+﻿{% extends "dashboard/base.html" %}
+{% block title %}Staff Management{% endblock %}
+{% block page_title %}Staff Management{% endblock %}
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;">
+
+  <!-- Staff table -->
+  <div style="background:#fff;border:1px solid #E8E4F5;border-radius:12px;overflow:hidden;">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #E8E4F5;">
+      <h2 style="font-weight:700;font-size:.9375rem;margin:0;">Current Staff Accounts</h2>
+      <p style="font-size:.8125rem;color:#A7A3C0;margin:4px 0 0;">Staff can manage products, orders, reviews and newsletter. Only superusers can add/remove staff.</p>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:.875rem;">
+      <thead><tr style="background:#F7F5FF;">
+        <th style="padding:.625rem 1.25rem;text-align:left;font-weight:600;color:#6B6B7C;">Name / Email</th>
+        <th style="padding:.625rem;text-align:center;font-weight:600;color:#6B6B7C;">Superuser</th>
+        <th style="padding:.625rem 1.25rem;text-align:right;font-weight:600;color:#6B6B7C;">Action</th>
+      </tr></thead>
+      <tbody>
+        {% for staff in staff_users %}
+        <tr style="border-top:1px solid #F0EDFF;">
+          <td style="padding:.75rem 1.25rem;">
+            <p style="font-weight:600;margin:0;">{{ staff.get_full_name|default:staff.email }}</p>
+            <p style="font-size:.78rem;color:#A7A3C0;margin:0;">{{ staff.email }}</p>
+          </td>
+          <td style="text-align:center;padding:.75rem;">
+            {% if staff.is_superuser %}<span style="color:#10B981;font-weight:700;">✓</span>{% else %}<span style="color:#D1D5DB;">—</span>{% endif %}
+          </td>
+          <td style="padding:.75rem 1.25rem;text-align:right;">
+            {% if not staff.is_superuser %}
+            <form action="{% url 'dashboard:staff_revoke' staff.pk %}" method="post" style="display:inline;" onsubmit="return confirm('Remove staff access from {{ staff.email }}?')">
+              {% csrf_token %}
+              <button type="submit" style="padding:5px 12px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;">Revoke</button>
+            </form>
+            {% else %}
+            <span style="font-size:.78rem;color:#A7A3C0;">Owner</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" style="padding:2rem;text-align:center;color:#A7A3C0;">No staff accounts yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Create staff form -->
+  <div style="background:#fff;border:1px solid #E8E4F5;border-radius:12px;padding:1.5rem;">
+    <h2 style="font-weight:700;font-size:.9375rem;margin:0 0 1rem;">Add New Staff Member</h2>
+    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.8125rem;color:#9A3412;">
+      Staff can access the dashboard but <strong>cannot</strong> access Django admin, promote users, or delete customers.
+    </div>
+    <form action="{% url 'dashboard:staff_create' %}" method="post" style="display:flex;flex-direction:column;gap:.875rem;">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div>
+          <label style="display:block;font-size:.8125rem;font-weight:600;color:#3D2F5C;margin-bottom:5px;">First Name</label>
+          <input type="text" name="first_name" style="width:100%;padding:.75rem 1rem;border:2px solid #D5CDE6;border-radius:9px;font-size:.875rem;outline:none;" />
+        </div>
+        <div>
+          <label style="display:block;font-size:.8125rem;font-weight:600;color:#3D2F5C;margin-bottom:5px;">Last Name</label>
+          <input type="text" name="last_name" style="width:100%;padding:.75rem 1rem;border:2px solid #D5CDE6;border-radius:9px;font-size:.875rem;outline:none;" />
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:.8125rem;font-weight:600;color:#3D2F5C;margin-bottom:5px;">Email Address *</label>
+        <input type="email" name="email" required style="width:100%;padding:.75rem 1rem;border:2px solid #D5CDE6;border-radius:9px;font-size:.875rem;outline:none;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:.8125rem;font-weight:600;color:#3D2F5C;margin-bottom:5px;">Password *</label>
+        <input type="password" name="password" required minlength="8" style="width:100%;padding:.75rem 1rem;border:2px solid #D5CDE6;border-radius:9px;font-size:.875rem;outline:none;" />
+      </div>
+      <button type="submit" style="width:100%;padding:.875rem;background:#2D1563;color:#fff;border:none;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;">
+        Create Staff Account
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
