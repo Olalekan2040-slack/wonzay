@@ -17,7 +17,7 @@ env/
 db.sqlite3
 media/
 staticfiles/
-static/css/output.css
+# static/css/output.css  ← intentionally tracked so Render has the compiled CSS
 
 # Environment variables
 .env
