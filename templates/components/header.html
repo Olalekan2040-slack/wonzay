@@ -12,7 +12,13 @@
     background: #ffffff;
     box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.07);
   }
+  /* Default (top of page): solid dark purple so white text/logo is always visible.
+     On pages with a dark hero the JS switches to transparent after confirming the
+     hero exists — that way other pages (login, collections, etc.) keep the solid bg. */
   #site-header.top {
+    background: #1A0A38;
+  }
+  #site-header.top.hero-page {
     background: transparent;
   }
 
@@ -335,9 +341,17 @@
   const closeIcon = document.getElementById('close-icon');
 
   /* ── Scroll state ── */
+  // True if this page has a dark hero element behind the header
+  const hasHero = !!(
+    document.getElementById('hero-section') ||
+    document.querySelector('[data-dark-hero]')
+  );
+  if (hasHero) header.classList.add('hero-page');
+
   function setScrolled(yes) {
     header.classList.toggle('scrolled', yes);
     header.classList.toggle('top', !yes);
+    // Coloured logo when white bg (scrolled), white logo on dark bg (top)
     logoDark.style.display  = yes ? 'block' : 'none';
     logoLight.style.display = yes ? 'none'  : 'block';
   }
