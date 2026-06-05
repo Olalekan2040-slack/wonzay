@@ -12,15 +12,20 @@
     background: #ffffff;
     box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.07);
   }
-  /* Default (top of page): solid dark purple so white text/logo is always visible.
-     On pages with a dark hero the JS switches to transparent after confirming the
-     hero exists — that way other pages (login, collections, etc.) keep the solid bg. */
+  /* Default (unscrolled): solid dark purple — white text always readable */
   #site-header.top {
     background: #1A0A38;
   }
+  /* Homepage with dark hero: transparent header */
   #site-header.top.hero-page {
     background: transparent;
   }
+
+  /* ── Logo filter ──────────────────────────────────────────── */
+  /* Unscrolled (dark bg): invert logo to white */
+  #site-header.top    #site-logo { filter: brightness(0) invert(1); }
+  /* Scrolled (white bg): show full colour logo */
+  #site-header.scrolled #site-logo { filter: none; }
 
   /* ── Top bar ─────────────────────────────────────────────── */
   .hdr-bar {
@@ -188,14 +193,13 @@
   <!-- ── Main bar ─────────────────────────────────────────── -->
   <div class="hdr-bar">
 
-    <!-- Logo -->
+    <!-- Logo — single image, CSS handles dark/light via filter on header state -->
     <a href="{% url 'store:home' %}" style="flex-shrink:0;display:flex;align-items:center;text-decoration:none;" aria-label="Wonzays Kollections">
-      <img id="hdr-logo-dark" src="{% static 'images/wonzays_website_logo_primary.png' %}"
+      <img id="site-logo"
+           src="{% static 'images/wonzays_website_logo_primary.png' %}"
            alt="Wonzays Kollections"
-           style="height:44px;width:auto;display:none;" loading="eager" />
-      <img id="hdr-logo-light" src="{% static 'images/wonzays_website_logo_primary.png' %}"
-           alt="Wonzays Kollections"
-           style="height:44px;width:auto;display:block;filter:brightness(0) invert(1);" loading="eager" />
+           style="height:44px;width:auto;display:block;transition:filter 0.35s ease;"
+           loading="eager" fetchpriority="high" />
     </a>
 
     <!-- Desktop nav -->
@@ -333,8 +337,6 @@
   const mega     = document.getElementById('mega-menu');
   const trigger  = document.getElementById('shop-trigger');
   const chevron  = document.getElementById('shop-chevron');
-  const logoDark  = document.getElementById('hdr-logo-dark');
-  const logoLight = document.getElementById('hdr-logo-light');
   const mobileToggle = document.getElementById('mobile-toggle');
   const mobileMenu   = document.getElementById('mobile-menu');
   const hamIcon   = document.getElementById('ham-icon');
@@ -351,9 +353,6 @@
   function setScrolled(yes) {
     header.classList.toggle('scrolled', yes);
     header.classList.toggle('top', !yes);
-    // Coloured logo when white bg (scrolled), white logo on dark bg (top)
-    logoDark.style.display  = yes ? 'block' : 'none';
-    logoLight.style.display = yes ? 'none'  : 'block';
   }
   setScrolled(window.scrollY > 50);
   window.addEventListener('scroll', () => setScrolled(window.scrollY > 50), { passive: true });
