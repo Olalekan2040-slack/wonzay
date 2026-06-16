@@ -22,7 +22,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /home/developer/wonzay
+            cd /home/developer/wonzay_prod/wonzay
 
             echo "Pulling latest code from GitHub..."
             git pull origin master
