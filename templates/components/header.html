@@ -21,11 +21,8 @@
     background: transparent;
   }
 
-  /* ── Logo filter ──────────────────────────────────────────── */
-  /* Unscrolled (dark bg): invert logo to white */
-  #site-header.top    #site-logo { filter: brightness(0) invert(1); }
-  /* Scrolled (white bg): show full colour logo */
-  #site-header.scrolled #site-logo { filter: none; }
+  /* ── Logo — no filter needed; logo PNG has its own white card background */
+  #site-logo { filter: none; }
 
   /* ── Top bar ─────────────────────────────────────────────── */
   .hdr-bar {

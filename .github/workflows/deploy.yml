@@ -34,10 +34,10 @@ jobs:
             pip install -r requirements.txt
 
             echo "Running database migrations..."
-            python manage.py migrate --noinput
+            DJANGO_SETTINGS_MODULE=config.settings.development python manage.py migrate --noinput
 
             echo "Collecting static files..."
-            python manage.py collectstatic --noinput
+            DJANGO_SETTINGS_MODULE=config.settings.development python manage.py collectstatic --noinput
 
             echo "Restarting application..."
             sudo systemctl restart wonzay

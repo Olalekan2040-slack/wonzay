@@ -1,0 +1,21 @@
+[Unit]
+Description=Wonzays Kollections - Gunicorn
+After=network.target
+
+[Service]
+User=developer
+Group=www-data
+WorkingDirectory=/home/developer/wonzay_prod/wonzay
+Environment="DJANGO_SETTINGS_MODULE=config.settings.development"
+ExecStart=/home/developer/wonzay_prod/wonzay/venv/bin/gunicorn \
+          config.wsgi:application \
+          --bind 127.0.0.1:8080 \
+          --workers 3 \
+          --log-file /var/log/wonzay/gunicorn.log \
+          --access-logfile /var/log/wonzay/access.log
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
