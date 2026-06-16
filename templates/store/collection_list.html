@@ -11,35 +11,75 @@
 </div>
 
 <!-- Collections grid -->
-<div style="background:white;padding:4rem 2rem;">
-  <div style="max-width:1400px;margin:0 auto;">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
-      {% for collection in collections %}
-      <a href="{{ collection.get_absolute_url }}" class="reveal"
-         style="display:block;position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;text-decoration:none;background:#3D2F5C;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);"
-         onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform='translateY(0)'">
-        {% if collection.cover_image %}
-        <img src="{{ collection.cover_image.url }}" alt="{{ collection.name }}" loading="lazy"
-             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;transition:transform 0.6s ease;"
-             onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'" />
-        {% else %}
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2D1560,#5B4B8A);">
-          <svg width="56" height="56" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
-        </div>
-        {% endif %}
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.75) 100%);"></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:1.5rem;">
-          <p style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:white;margin:0;">{{ collection.name }}</p>
-          <p style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin:4px 0 0;font-weight:500;">{{ collection.products.count }} items</p>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
+<style>
+  .collections-wrap { background:#fff; padding:4rem 2rem; }
+  .collections-grid {
+    max-width:1400px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1.5rem;
+  }
+  .col-card {
+    display:block;
+    position:relative;
+    border-radius:20px;
+    overflow:hidden;
+    aspect-ratio:3/4;
+    text-decoration:none;
+    background:#3D2F5C;
+    transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .col-card:hover { transform:translateY(-8px); }
+  .col-card img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;transition:transform 0.6s ease; }
+  .col-card:hover img { transform:scale(1.07); }
+  .col-card-overlay { position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.75) 100%); }
+  .col-card-info { position:absolute;bottom:0;left:0;right:0;padding:1.25rem; }
+  .col-card-name {
+    font-family:'Playfair Display',serif;
+    font-size:1.1rem;
+    font-weight:700;
+    color:#fff;
+    margin:0;
+    line-height:1.3;
+  }
+  .col-card-count { font-size:0.78rem;color:rgba(255,255,255,0.6);margin:4px 0 0;font-weight:500; }
+
+  @media (max-width:1024px) {
+    .collections-grid { grid-template-columns:repeat(3,1fr); }
+  }
+  @media (max-width:700px) {
+    .collections-wrap { padding:2.5rem 1rem; }
+    .collections-grid { grid-template-columns:repeat(2,1fr); gap:0.875rem; }
+    .col-card-info { padding:0.875rem; }
+    .col-card-name { font-size:0.875rem; }
+    .col-card-count { font-size:0.7rem; }
+  }
+  @media (max-width:400px) {
+    .collections-grid { grid-template-columns:repeat(2,1fr); gap:0.625rem; }
+    .col-card-name { font-size:0.8rem; }
+    .col-card-info { padding:0.625rem; }
+  }
+</style>
+
+<div class="collections-wrap">
+  <div class="collections-grid">
+    {% for collection in collections %}
+    <a href="{{ collection.get_absolute_url }}" class="col-card reveal">
+      {% if collection.cover_image %}
+      <img src="{{ collection.cover_image.url }}" alt="{{ collection.name }}" loading="lazy" />
+      {% else %}
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2D1560,#5B4B8A);">
+        <svg width="56" height="56" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+      </div>
+      {% endif %}
+      <div class="col-card-overlay"></div>
+      <div class="col-card-info">
+        <p class="col-card-name">{{ collection.name }}</p>
+        <p class="col-card-count">{{ collection.products.count }} items</p>
+      </div>
+    </a>
+    {% endfor %}
   </div>
 </div>
-
-<style>
-  @media (max-width: 900px) { .collections-grid { grid-template-columns: repeat(2,1fr) !important; } }
-  @media (max-width: 480px) { .collections-grid { grid-template-columns: 1fr !important; } }
-</style>
 {% endblock %}
