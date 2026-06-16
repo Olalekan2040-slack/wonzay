@@ -6,7 +6,7 @@ All transactional emails are sent from here using HTML + plain-text fallback.
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
-FROM = f"Wonzays Kollections <{settings.DEFAULT_FROM_EMAIL}>"
+FROM = settings.DEFAULT_FROM_EMAIL
 
 
 # ─── helpers ────────────────────────────────────────────────────────────────
