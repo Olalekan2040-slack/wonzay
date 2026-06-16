@@ -39,6 +39,9 @@ jobs:
             echo "Collecting static files..."
             DJANGO_SETTINGS_MODULE=config.settings.development python manage.py collectstatic --noinput
 
+            echo "Clearing any stray gunicorn processes on port 8080..."
+            fuser -k 8080/tcp || true
+
             echo "Restarting application..."
             sudo systemctl restart wonzay
 
