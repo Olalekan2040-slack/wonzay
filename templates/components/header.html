@@ -21,8 +21,8 @@
     background: transparent;
   }
 
-  /* ── Logo — no filter needed; logo PNG has its own white card background */
-  #site-logo { filter: none; }
+  /* ── Logo — no filter needed; logo PNG has its own dark card background */
+  #site-logo { filter: none; border-radius: 8px; }
 
   /* ── Top bar ─────────────────────────────────────────────── */
   .hdr-bar {
@@ -193,9 +193,9 @@
     <!-- Logo — single image, CSS handles dark/light via filter on header state -->
     <a href="{% url 'store:home' %}" style="flex-shrink:0;display:flex;align-items:center;text-decoration:none;" aria-label="Wonzays Kollections">
       <img id="site-logo"
-           src="{% static 'images/wonzays_website_logo_primary.png' %}"
+           src="{% static 'images/wonzay_logo.png' %}"
            alt="Wonzays Kollections"
-           style="height:44px;width:auto;display:block;transition:filter 0.35s ease;"
+           style="height:48px;width:auto;display:block;transition:filter 0.35s ease;"
            loading="eager" fetchpriority="high" />
     </a>
 
