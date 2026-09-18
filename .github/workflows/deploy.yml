@@ -34,10 +34,10 @@ jobs:
             pip install -r requirements.txt
 
             echo "Running database migrations..."
-            DJANGO_SETTINGS_MODULE=config.settings.development python manage.py migrate --noinput
+            DJANGO_SETTINGS_MODULE=config.settings.production python manage.py migrate --noinput
 
             echo "Collecting static files..."
-            DJANGO_SETTINGS_MODULE=config.settings.development python manage.py collectstatic --noinput
+            DJANGO_SETTINGS_MODULE=config.settings.production python manage.py collectstatic --noinput
 
             echo "Clearing any stray gunicorn processes on port 8080..."
             fuser -k 8080/tcp || true
