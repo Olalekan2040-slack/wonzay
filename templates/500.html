@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Something Went Wrong — Wonzays Kollections</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" href="/static/images/wonzay_logo_icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, #2a1458 0%, #1A0A38 55%, #120726 100%);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #fff;
+  }
+  .wrap {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+  .logo { height: 44px; width: auto; border-radius: 8px; margin-bottom: 2.5rem; }
+  .code {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: clamp(4rem, 14vw, 8rem);
+    line-height: 1;
+    background: linear-gradient(135deg, #f2d98a 0%, #c9a227 50%, #f2d98a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    margin-top: 0.75rem;
+  }
+  p {
+    max-width: 420px;
+    margin: 1rem auto 2.25rem;
+    color: rgba(255,255,255,0.62);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .actions { display: flex; gap: 0.85rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block;
+    padding: 0.85rem 1.9rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #e9c766, #c9a227);
+    color: #1A0A38;
+  }
+  .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img class="logo" src="/static/images/wonzay_logo_icon.png" alt="Wonzays Kollections" />
+    <div class="code">500</div>
+    <h1>Something went wrong on our end</h1>
+    <p>We're already looking into it. Please try again in a few minutes — sorry for the trouble.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/">Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>
