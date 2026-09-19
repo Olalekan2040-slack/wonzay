@@ -29,7 +29,19 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
             return redirect("cart:detail")
 
         rate_id = request.POST.get("shipping_rate_id")
-        rate = ShippingRate.objects.filter(pk=rate_id).first()
+        rate = ShippingRate.objects.filter(pk=rate_id).first() if rate_id else None
+
+        shipping_rates = ShippingRate.objects.filter(is_active=True, country_code="AU")
+        if shipping_rates.exists() and not rate:
+            return self.render_to_response({
+                **self.get_context_data(),
+                "error": "Please select a shipping method.",
+            })
+        if not request.POST.get("full_name", "").strip():
+            return self.render_to_response({
+                **self.get_context_data(),
+                "error": "Please enter your full name.",
+            })
 
         address = ShippingAddress.objects.create(
             full_name=request.POST.get("full_name", ""),

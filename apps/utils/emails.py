@@ -138,13 +138,12 @@ def send_order_confirmation(order) -> bool:
     if not recipient:
         return False
 
-    name = (
-        order.customer.first_name
-        if order.customer and order.customer.first_name
-        else order.shipping_address.full_name.split()[0]
-        if order.shipping_address
-        else "Customer"
-    )
+    if order.customer and order.customer.first_name:
+        name = order.customer.first_name
+    elif order.shipping_address and order.shipping_address.full_name.split():
+        name = order.shipping_address.full_name.split()[0]
+    else:
+        name = "Customer"
 
     # Build items table rows
     items_html = ""
