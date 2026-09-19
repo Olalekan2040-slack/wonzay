@@ -10,6 +10,7 @@ from .models import Order, ShippingAddress, OrderItem, ShippingRate
 from apps.cart.utils import get_or_create_cart
 import stripe
 import json
+from decimal import Decimal
 
 
 class CheckoutView(LoginRequiredMixin, TemplateView):
@@ -94,8 +95,12 @@ class PaymentView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         order_id = self.request.session.get("pending_order_id")
+        order = None
         if order_id:
-            ctx["order"] = Order.objects.filter(pk=order_id).first()
+            order = Order.objects.filter(pk=order_id).first()
+            ctx["order"] = order
+        if order:
+            ctx["afterpay_installment"] = (order.total / 4).quantize(Decimal("0.01"))
         ctx["stripe_public_key"] = settings.STRIPE_PUBLIC_KEY
         return ctx
 

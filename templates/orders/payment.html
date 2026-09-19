@@ -40,7 +40,7 @@
     <!-- AfterPay -->
     <div x-show="method === 'afterpay'" class="border border-[var(--color-border)] p-6 text-center" style="display:none;">
       <p class="font-semibold mb-2">Pay in 4 interest-free instalments</p>
-      <p class="text-sm text-[var(--color-text-muted)] mb-4">4 × ${{ order.total|floatformat:2|divisibleby:4 }} every 2 weeks</p>
+      <p class="text-sm text-[var(--color-text-muted)] mb-4">4 × ${{ afterpay_installment|floatformat:2 }} every 2 weeks</p>
       <button class="btn-primary w-full py-4">Continue with AfterPay</button>
     </div>
 
