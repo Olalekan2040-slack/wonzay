@@ -9,6 +9,7 @@
   <h1 class="font-serif font-bold text-3xl mb-2">Payment</h1>
   <p class="text-[var(--color-text-muted)] mb-8">All transactions are encrypted and secure.</p>
 
+  {% csrf_token %}
   {% if order %}
   <div class="border border-[var(--color-border)] p-6 mb-6 bg-[var(--color-surface)]">
     <div class="flex items-center justify-between mb-3">
@@ -78,6 +79,11 @@ document.getElementById('stripe-pay-btn').addEventListener('click', async () => 
     body: JSON.stringify({ order_id: '{{ order.pk }}' })
   });
   const data = await resp.json();
+  if (!resp.ok || !data.client_secret) {
+    document.getElementById('stripe-errors').textContent = data.error || 'Could not start payment. Please try again.';
+    btn.disabled = false; btn.textContent = 'Pay ${{ order.total }}';
+    return;
+  }
   const { error } = await stripe.confirmCardPayment(data.client_secret, { payment_method: { card: cardElement } });
   if (error) {
     document.getElementById('stripe-errors').textContent = error.message;

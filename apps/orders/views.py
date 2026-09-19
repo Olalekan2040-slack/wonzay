@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, DetailView, View
 from django.shortcuts import redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -86,6 +86,38 @@ class PaymentView(TemplateView):
             ctx["order"] = Order.objects.filter(pk=order_id).first()
         ctx["stripe_public_key"] = settings.STRIPE_PUBLIC_KEY
         return ctx
+
+
+class CreatePaymentIntentView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON")
+
+        order_id = data.get("order_id")
+        pending_order_id = request.session.get("pending_order_id")
+        if not order_id or str(order_id) != str(pending_order_id):
+            return HttpResponseBadRequest("Invalid order")
+
+        order = get_object_or_404(Order, pk=order_id)
+        if order.payment_status == "paid":
+            return HttpResponseBadRequest("Order already paid")
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            intent = stripe.PaymentIntent.create(
+                amount=int(order.total * 100),
+                currency="aud",
+                metadata={"order_id": str(order.id), "order_number": order.order_number},
+            )
+        except stripe.error.StripeError as exc:
+            return JsonResponse({"error": str(exc)}, status=400)
+
+        order.stripe_payment_intent = intent.id
+        order.save(update_fields=["stripe_payment_intent"])
+
+        return JsonResponse({"client_secret": intent.client_secret})
 
 
 class OrderSuccessView(DetailView):

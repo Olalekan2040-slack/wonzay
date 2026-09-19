@@ -6,6 +6,7 @@ app_name = "orders"
 urlpatterns = [
     path("", views.CheckoutView.as_view(), name="checkout"),
     path("payment/", views.PaymentView.as_view(), name="payment"),
+    path("create-payment-intent/", views.CreatePaymentIntentView.as_view(), name="create_payment_intent"),
     path("stripe/webhook/", views.StripeWebhookView.as_view(), name="stripe_webhook"),
     path("<int:order_id>/success/", views.OrderSuccessView.as_view(), name="success"),
 ]
