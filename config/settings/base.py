@@ -161,3 +161,23 @@ AWS_S3_FILE_OVERWRITE = False
 CURRENCY = "AUD"
 CURRENCY_SYMBOL = "$"
 FREE_SHIPPING_THRESHOLD = 150
+
+# Logging — surface unhandled exceptions (500s) in the gunicorn/console log
+# even when DEBUG=False, where Django's own defaults would otherwise only
+# try to email ADMINS (unset here) and stay silent everywhere else.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
