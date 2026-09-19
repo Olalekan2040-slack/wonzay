@@ -1,7 +1,13 @@
 {% load static %}
+<style>
+  @media (max-width: 640px) {
+    #newsletter-popup .popup-card-grid { grid-template-columns: 1fr !important; }
+    #newsletter-popup .popup-left-panel { display: none !important; }
+  }
+</style>
 <div id="newsletter-popup"
-     style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(26,10,56,0.65);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:1.5rem;padding-top:calc(68px + 1.5rem);"
-  <div style="background:#fff;border-radius:24px;overflow:hidden;width:100%;max-width:560px;position:relative;animation:slideUp 0.3s ease;"
+     style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(26,10,56,0.65);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:1.5rem;padding-top:calc(68px + 1.5rem);">
+  <div style="background:#fff;border-radius:24px;overflow:hidden;width:100%;max-width:560px;max-height:calc(100vh - 68px - 3rem);overflow-y:auto;position:relative;animation:slideUp 0.3s ease;"
        onclick="event.stopPropagation()">
 
     <!-- Close -->
@@ -13,10 +19,10 @@
       </svg>
     </button>
 
-    <div style="display:grid;grid-template-columns:1fr 1.3fr;">
+    <div class="popup-card-grid" style="display:grid;grid-template-columns:1fr 1.3fr;">
 
       <!-- Left accent panel -->
-      <div style="background:linear-gradient(160deg,#1A0A38 0%,#3E2078 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;position:relative;overflow:hidden;">
+      <div class="popup-left-panel" style="background:linear-gradient(160deg,#1A0A38 0%,#3E2078 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;position:relative;overflow:hidden;">
         <!-- Decorative orb -->
         <div style="position:absolute;top:-40px;left:-40px;width:120px;height:120px;background:rgba(91,75,138,0.3);border-radius:50%;filter:blur(30px);"></div>
         <div style="position:relative;">

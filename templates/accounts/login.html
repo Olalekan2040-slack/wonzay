@@ -17,9 +17,9 @@
       <h1 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:#1F1F23;text-align:center;margin:0 0 0.5rem;">Welcome back</h1>
       <p style="font-size:0.9rem;color:#6B6B7C;text-align:center;margin:0 0 2rem;">Sign in to continue shopping</p>
 
-      {% if form.errors %}
+      {% if error %}
       <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;margin-bottom:1.5rem;">
-        <p style="font-size:0.875rem;color:#DC2626;margin:0;">Incorrect email or password. Please try again.</p>
+        <p style="font-size:0.875rem;color:#DC2626;margin:0;">{{ error }}</p>
       </div>
       {% endif %}
 
@@ -29,7 +29,7 @@
 
         <div>
           <label style="display:block;font-size:0.875rem;font-weight:600;color:#1F1F23;margin-bottom:6px;">Email</label>
-          <input type="email" name="email" required placeholder="you@example.com" value="{{ form.username.value|default:'' }}"
+          <input type="email" name="email" required placeholder="you@example.com" value="{{ email|default:'' }}"
                  style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
                  onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
                  onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />

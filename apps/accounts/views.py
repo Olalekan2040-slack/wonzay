@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView, CreateView, View
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -18,19 +20,32 @@ class RegisterView(View):
         return render(request, self.template_name)
 
     def post(self, request):
-        email = request.POST.get("email", "").lower()
-        password = request.POST.get("password", "")
+        email = request.POST.get("email", "").strip().lower()
+        password1 = request.POST.get("password1", "")
+        password2 = request.POST.get("password2", "")
         first_name = request.POST.get("first_name", "")
         last_name = request.POST.get("last_name", "")
+
+        form_data = {"email": email, "first_name": first_name, "last_name": last_name}
+
+        if not email or not password1:
+            return render(request, self.template_name, {"error": "Please fill in all required fields.", **form_data})
         if User.objects.filter(username=email).exists():
-            return render(request, self.template_name, {"error": "Email already registered."})
+            return render(request, self.template_name, {"error": "Email already registered.", **form_data})
+        if password1 != password2:
+            return render(request, self.template_name, {"error": "Passwords do not match.", **form_data})
+        try:
+            validate_password(password1)
+        except ValidationError as exc:
+            return render(request, self.template_name, {"error": " ".join(exc.messages), **form_data})
+
         user = User.objects.create_user(
-            username=email, email=email, password=password,
+            username=email, email=email, password=password1,
             first_name=first_name, last_name=last_name,
         )
         CustomerProfile.objects.create(user=user)
         Wishlist.objects.create(user=user)
-        login(request, user)
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         from apps.cart.utils import merge_session_cart_into_user_cart
         merge_session_cart_into_user_cart(request)
         # Send welcome email
@@ -46,16 +61,20 @@ class LoginView(View):
         return render(request, self.template_name, {"next": request.GET.get("next", "")})
 
     def post(self, request):
-        email = request.POST.get("email", "").lower()
+        email = request.POST.get("email", "").strip().lower()
         password = request.POST.get("password", "")
+        next_url = request.POST.get("next", "")
         user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
             from apps.cart.utils import merge_session_cart_into_user_cart
             merge_session_cart_into_user_cart(request)
-            next_url = request.POST.get("next") or "accounts:profile"
-            return redirect(next_url)
-        return render(request, self.template_name, {"error": "Invalid email or password."})
+            return redirect(next_url or "accounts:profile")
+        return render(request, self.template_name, {
+            "error": "Invalid email or password.",
+            "email": email,
+            "next": next_url,
+        })
 
 
 class LogoutView(View):

@@ -17,20 +17,26 @@
       <h1 style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:#1F1F23;text-align:center;margin:0 0 0.5rem;">Create your account</h1>
       <p style="font-size:0.9rem;color:#6B6B7C;text-align:center;margin:0 0 2rem;">Join Wonzays and get 10% off your first order</p>
 
+      {% if error %}
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;margin-bottom:1.5rem;">
+        <p style="font-size:0.875rem;color:#DC2626;margin:0;">{{ error }}</p>
+      </div>
+      {% endif %}
+
       <form method="post" action="{% url 'accounts:register' %}" style="display:flex;flex-direction:column;gap:1.25rem;">
         {% csrf_token %}
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div>
             <label style="display:block;font-size:0.875rem;font-weight:600;color:#1F1F23;margin-bottom:6px;">First name</label>
-            <input type="text" name="first_name" required placeholder="Jane"
+            <input type="text" name="first_name" required placeholder="Jane" value="{{ first_name|default:'' }}"
                    style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
                    onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
                    onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
           </div>
           <div>
             <label style="display:block;font-size:0.875rem;font-weight:600;color:#1F1F23;margin-bottom:6px;">Last name</label>
-            <input type="text" name="last_name" required placeholder="Doe"
+            <input type="text" name="last_name" required placeholder="Doe" value="{{ last_name|default:'' }}"
                    style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
                    onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
                    onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
@@ -39,7 +45,7 @@
 
         <div>
           <label style="display:block;font-size:0.875rem;font-weight:600;color:#1F1F23;margin-bottom:6px;">Email address</label>
-          <input type="email" name="email" required placeholder="you@example.com"
+          <input type="email" name="email" required placeholder="you@example.com" value="{{ email|default:'' }}"
                  style="width:100%;padding:12px 16px;border:1.5px solid #E8E4F5;border-radius:10px;font-size:1rem;color:#1F1F23;outline:none;transition:all 0.2s;background:white;"
                  onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
                  onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
@@ -60,12 +66,6 @@
                  onfocus="this.style.borderColor='#5B4B8A';this.style.boxShadow='0 0 0 3px rgba(91,75,138,0.1)'"
                  onblur="this.style.borderColor='#E8E4F5';this.style.boxShadow='none'" />
         </div>
-
-        {% if form.errors %}
-        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;">
-          {% for field, errors in form.errors.items %}{% for error in errors %}<p style="font-size:0.875rem;color:#DC2626;margin:0;">{{ error }}</p>{% endfor %}{% endfor %}
-        </div>
-        {% endif %}
 
         <button type="submit" style="width:100%;padding:14px;background:#3D2F5C;color:white;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:4px;"
                 onmouseover="this.style.background='#5B4B8A';this.style.transform='translateY(-2px)'"
